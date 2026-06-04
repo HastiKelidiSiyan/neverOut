@@ -50,7 +50,6 @@ class DatabaseService {
         "products",
         product.toMap(),
         conflictAlgorithm: ConflictAlgorithm.fail,
-      
       );
     } on DatabaseException {
       throw Exception('A Product with such name already exists');

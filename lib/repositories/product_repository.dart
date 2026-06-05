@@ -22,16 +22,6 @@ class ProductRepository {
     return databaseService.products();
   }
 
-  Future<void> fetchProducts() async {
-    final fetchedProducts = await backendService.fetchProducts();
-
-    for (final product in fetchedProducts) {
-      if (product.syncStatus == SyncStatus.synced) {
-        await databaseService.updateProductSyncStatus(product);
-      }
-    }
-  }
-
   Future<void> addProduct(Product product) async {
     try {
       await databaseService.addProduct(product);

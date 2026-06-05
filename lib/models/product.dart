@@ -33,6 +33,7 @@ class Product {
 
   bool get isLow => quantity <= 1;
   Map<String, dynamic> toMap() => {
+    'server_id': serverId,
     'database_id': databaseId,
     'name': name,
     'quantity': quantity,

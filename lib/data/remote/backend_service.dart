@@ -10,7 +10,7 @@ class BackendService {
 
   Future<void> addProduct(Product product) async {
     try {
-      await _supabaseClient.from(_tableName).insert(product.toMap());
+      await _supabaseClient.from(_tableName).insert(product.toJson());
     } catch (e) {
       throw Exception('Error adding product to Supabase: $e');
     }
@@ -25,7 +25,7 @@ class BackendService {
             Duration(seconds: 30),
           );
       final List<Product> products = (response as List<dynamic>)
-          .map((json) => Product.fromMap(json))
+          .map((json) => Product.fromJson(json))
           .toList();
       return products;
     } on TimeoutException {
@@ -41,7 +41,7 @@ class BackendService {
     try {
       await _supabaseClient
           .from(_tableName)
-          .update(product.toMap())
+          .update(product.toJson())
           .eq('server_id', product.serverId!);
       print('Product updated in Supabase successfully!');
     } catch (e) {
@@ -59,6 +59,20 @@ class BackendService {
       print('Product deleted from Supabase successfully!');
     } catch (e) {
       print('Error deleting product from Supabase: $e');
+      rethrow;
+    }
+  }
+
+  Future<Product> getProduct(Product product) async {
+    try {
+      final data = await _supabaseClient
+          .from(_tableName)
+          .select()
+          .eq('database_id', product.databaseId!)
+          .single();
+
+      return Product.fromJson(data);
+    } catch (e) {
       rethrow;
     }
   }

@@ -32,6 +32,7 @@ class Product {
   final SyncStatus syncStatus;
 
   bool get isLow => quantity <= 1;
+
   Map<String, dynamic> toMap() => {
     'server_id': serverId,
     'database_id': databaseId,
@@ -57,6 +58,30 @@ class Product {
       syncStatus: SyncStatus.values.firstWhere(
         (status) => status.name == map['sync_status'],
       ),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'database_id': databaseId,
+    'name': name,
+    'quantity': quantity,
+    'unit_type': unitType.name,
+    'updated_at': updatedAt!.toUtc().toIso8601String(),
+  };
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      serverId: json['server_id'],
+      databaseId: json['database_id'].toString(),
+      name: json['name'].toString(),
+      quantity: json['quantity'].toInt(),
+      unitType: UnitType.values.firstWhere(
+        (e) => e.name == json['unit_type'],
+      ),
+      updatedAt: DateTime.parse(
+        json['updated_at'],
+      ),
+      syncStatus: SyncStatus.synced,
     );
   }
 }

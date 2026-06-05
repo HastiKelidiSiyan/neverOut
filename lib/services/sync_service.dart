@@ -40,7 +40,9 @@ class SyncService {
       switch (product.syncStatus) {
         case SyncStatus.pendingCreate:
           await backendService.addProduct(product);
+          final fetchedProduct = await backendService.getProduct(product);
           await databaseService.updateProductSyncStatus(product);
+          await databaseService.updateProductServerId(fetchedProduct);
           break;
 
         case SyncStatus.pendingUpdate:

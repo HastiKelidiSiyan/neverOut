@@ -80,8 +80,18 @@ class DatabaseService {
       'products',
       {
         'sync_status': 'synced',
+      },
+      where: 'database_id = ?',
+      whereArgs: [product.databaseId],
+    );
+  }
 
-        //Little
+  Future<void> updateProductServerId(Product product) async {
+    final db = await database;
+    await db.update(
+      'products',
+      {
+        'server_id': product.serverId,
       },
       where: 'database_id = ?',
       whereArgs: [product.databaseId],

@@ -100,9 +100,15 @@ class DatabaseService {
 
   Future<void> updateProduct(Product product) async {
     final db = await database;
+    final productMap = product.toMap();
+
+    if (product.serverId == null) {
+      productMap.remove('server_id');
+    }
+
     await db.update(
       'products',
-      product.toMap(),
+      productMap,
       where: 'database_id = ?',
       whereArgs: [product.databaseId],
     );

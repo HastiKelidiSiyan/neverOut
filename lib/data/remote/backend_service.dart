@@ -39,10 +39,16 @@ class BackendService {
 
   Future<void> updateProduct(Product product) async {
     try {
+      final serverId = product.serverId;
+
+      if (serverId == null) {
+        throw Exception('Product server id has not been synced yet');
+      }
+
       await _supabaseClient
           .from(_tableName)
           .update(product.toJson())
-          .eq('server_id', product.serverId!);
+          .eq('server_id', serverId);
       print('Product updated in Supabase successfully!');
     } catch (e) {
       print('Error updating product in Supabase: $e');
@@ -52,10 +58,16 @@ class BackendService {
 
   Future<void> deleteProduct(Product product) async {
     try {
+      final serverId = product.serverId;
+
+      if (serverId == null) {
+        throw Exception('Product server id has not been synced yet');
+      }
+
       await _supabaseClient
           .from(_tableName)
           .delete()
-          .eq('server_id', product.serverId!);
+          .eq('server_id', serverId);
       print('Product deleted from Supabase successfully!');
     } catch (e) {
       print('Error deleting product from Supabase: $e');
@@ -72,6 +84,24 @@ class BackendService {
           .single();
 
       return Product.fromJson(data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Product?> findProduct(Product product) async {
+    try {
+      final data = await _supabaseClient
+          .from(_tableName)
+          .select()
+          .eq('database_id', product.databaseId!)
+          .limit(1);
+
+      if (data.isEmpty) {
+        return null;
+      }
+
+      return Product.fromJson(data.first);
     } catch (e) {
       rethrow;
     }

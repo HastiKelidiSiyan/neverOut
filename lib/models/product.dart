@@ -7,6 +7,7 @@ enum SyncStatus {
   pendingCreate,
   pendingUpdate,
   pendingDelete,
+  deleted
 }
 
 final uuid = Uuid();
@@ -40,7 +41,7 @@ class Product {
     'quantity': quantity,
     'unit_type': unitType.name,
     'updated_at': updatedAt!.toUtc().toIso8601String(),
-    'sync_status': syncStatus.name
+    'sync_status': syncStatus.name,
   };
 
   factory Product.fromMap(Map<String, dynamic> map) {

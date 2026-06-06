@@ -79,7 +79,15 @@ class SyncService {
 
           case SyncStatus.pendingDelete:
             await backendService.deleteProduct(product);
-            await databaseService.updateProductSyncStatus(product);
+            await databaseService.updateProductSyncStatus(
+              product,
+              SyncStatus.deleted,
+            );
+            await syncPendingProducts();
+            break;
+
+          case SyncStatus.deleted:
+            await databaseService.deleteProduct(product);
             break;
 
           default:

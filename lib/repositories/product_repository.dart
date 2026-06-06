@@ -59,6 +59,14 @@ class ProductRepository {
     }
   }
 
+  Future<void> setDeleted (Product product) async {
+    try {
+      await databaseService.updateProductSyncStatus(product, SyncStatus.pendingDelete);
+    } catch (e) {
+      throw Exception('Error Deleting Product: $e');
+    }
+  }
+
   Future<void> syncPendingProducts() async {
     await syncService.syncPendingProducts();
   }

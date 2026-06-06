@@ -31,7 +31,13 @@ class ProductsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _products = await productRepository.getProducts();
+      final products = await productRepository.getProducts();
+
+      _products = products
+          .where(
+            (product) => product.syncStatus != SyncStatus.pendingDelete,
+          )
+          .toList();
     } catch (error) {
       _error = error;
     }
@@ -62,6 +68,14 @@ class ProductsProvider extends ChangeNotifier {
 
   Future<void> deleteProduct(Product product) async {
     await productRepository.deleteProduct(product);
+
+    await loadProducts();
+    unawaited(syncProducts());
+    notifyListeners();
+  }
+
+  Future<void> setDeleted(Product product) async {
+    await productRepository.setDeleted(product);
 
     await loadProducts();
     unawaited(syncProducts());

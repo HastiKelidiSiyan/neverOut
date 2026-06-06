@@ -96,7 +96,7 @@ class ProductsListItem extends StatelessWidget {
               final messenger = ScaffoldMessenger.of(context);
               final productsProvider = ProductsProviderScope.read(context);
               try {
-                await productsProvider.deleteProduct(product);
+                await productsProvider.setDeleted(product);
               } catch (e) {
                 messenger.showSnackBar(
                   SnackBar(

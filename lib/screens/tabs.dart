@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/screens/products.dart';
 import 'package:never_out/screens/ran_out.dart';
 import 'package:never_out/theme/app_colors.dart';
 
 class Tabs extends StatefulWidget {
-  const Tabs({super.key});
+  const Tabs({
+    super.key,
+  });
 
   @override
   State<Tabs> createState() => _TabsState();
@@ -23,6 +26,7 @@ class _TabsState extends State<Tabs> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final appColors = theme.extension<AppThemeColors>()!;
+    final productsProvider = ProductsProviderScope.watch(context);
 
     var activePage = 'RanOut';
     Widget activeScreen = const RanOutScreen();
@@ -39,8 +43,18 @@ class _TabsState extends State<Tabs> {
       return appColors.appBarBackground;
     }
 
+    void sync() async {
+      await productsProvider.syncProducts();
+    }
+
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: productsProvider.isSyncing ? null : sync,
+            icon: Icon(Icons.sync),
+          ),
+        ],
         title: Text(
           activePage,
           style: theme.textTheme.titleLarge?.copyWith(

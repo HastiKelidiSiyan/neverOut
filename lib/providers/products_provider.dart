@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:never_out/models/product.dart';
 import 'package:never_out/repositories/product_repository.dart';
@@ -18,6 +20,10 @@ class ProductsProvider extends ChangeNotifier {
   Object? _error;
 
   Object? get error => _error;
+
+  bool _isSyncing = false;
+
+  bool get isSyncing => _isSyncing;
 
   Future<void> loadProducts() async {
     _isLoading = true;
@@ -41,37 +47,40 @@ class ProductsProvider extends ChangeNotifier {
       throw Exception(e);
     }
 
-    _products = [..._products, product];
+    await loadProducts();
+    unawaited(syncProducts());
     notifyListeners();
   }
 
   Future<void> updateProduct(Product updatedProduct) async {
     await productRepository.updateProduct(updatedProduct);
 
-    final index = _products.indexWhere(
-      (e) => e.databaseId == updatedProduct.databaseId,
-    );
-
-    if (index == -1) {
-      _products = [..._products, updatedProduct];
-    } else {
-      _products = [
-        ..._products.take(index),
-        updatedProduct,
-        ..._products.skip(index + 1),
-      ];
-    }
-
+    await loadProducts();
+    unawaited(syncProducts());
     notifyListeners();
   }
 
   Future<void> deleteProduct(Product product) async {
     await productRepository.deleteProduct(product);
 
-    _products = _products
-        .where((e) => e.databaseId != product.databaseId)
-        .toList();
+    await loadProducts();
+    unawaited(syncProducts());
+    notifyListeners();
+  }
 
+  Future<void> syncProducts() async {
+    _isSyncing = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await productRepository.syncPendingProducts();
+      await loadProducts();
+    } catch (error) {
+      _error = error;
+    }
+
+    _isSyncing = false;
     notifyListeners();
   }
 }

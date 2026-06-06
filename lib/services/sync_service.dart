@@ -6,62 +6,77 @@ import 'package:never_out/data/remote/backend_service.dart';
 import 'package:never_out/models/product.dart';
 
 class SyncService {
-  final Connectivity connectivity;
+  SyncService({
+    DatabaseService? databaseService,
+    BackendService? backendService,
+    Connectivity? connectivity,
+  }) : databaseService = databaseService ?? DatabaseService(),
+       backendService = backendService ?? BackendService(),
+       connectivity = connectivity ?? Connectivity();
+
   final DatabaseService databaseService;
   final BackendService backendService;
-
-  StreamSubscription? _subscription;
-
-  SyncService({
-    required this.connectivity,
-    required this.databaseService,
-    required this.backendService,
-  });
-
-  void startListening() {
-    _subscription = connectivity.onConnectivityChanged.listen(
-      (List<ConnectivityResult> result) async {
-        if (result.contains(ConnectivityResult.none)) {
-          return;
-        }
-        await syncPendingProducts();
-      },
-    );
-  }
+  final Connectivity connectivity;
 
   Future<void> syncPendingProducts() async {
-    final pendingProducts = await databaseService.getPendingProducts();
+    final List<ConnectivityResult> connectivityResult = await connectivity
+        .checkConnectivity();
 
-    if (pendingProducts.isEmpty) {
-      return;
-    }
+    if (connectivityResult.contains(ConnectivityResult.wifi) ||
+        connectivityResult.contains(ConnectivityResult.mobile)) {
+      final pendingProducts = await databaseService.getPendingProducts();
 
-    for (final product in pendingProducts) {
-      switch (product.syncStatus) {
-        case SyncStatus.pendingCreate:
-          await backendService.addProduct(product);
-          final fetchedProduct = await backendService.getProduct(product);
-          await databaseService.updateProductSyncStatus(product);
-          await databaseService.updateProductServerId(fetchedProduct);
-          break;
+      if (pendingProducts.isEmpty) {
+        return;
+      }
 
-        case SyncStatus.pendingUpdate:
-          await backendService.updateProduct(product);
-          await databaseService.updateProductSyncStatus(product);
-          break;
+      for (final product in pendingProducts) {
+        switch (product.syncStatus) {
+          case SyncStatus.pendingCreate:
+            final fetchedProduct = await backendService.findProduct(product);
 
-        case SyncStatus.pendingDelete:
-          await backendService.deleteProduct(product);
-          await databaseService.updateProductSyncStatus(product);
-          break;
+            if (fetchedProduct == null) {
+              await backendService.addProduct(product);
+              final createdProduct = await backendService.getProduct(product);
+              await databaseService.updateProductServerId(createdProduct);
+            } else {
+              product.serverId = fetchedProduct.serverId;
+              await backendService.updateProduct(product);
+              await databaseService.updateProductServerId(product);
+            }
 
-        default:
-          break;
+            await databaseService.updateProductSyncStatus(product);
+            break;
+
+          case SyncStatus.pendingUpdate:
+            if (product.serverId == null) {
+              final fetchedProduct = await backendService.findProduct(product);
+
+              if (fetchedProduct == null) {
+                await backendService.addProduct(product);
+                final createdProduct = await backendService.getProduct(product);
+                await databaseService.updateProductServerId(createdProduct);
+                await databaseService.updateProductSyncStatus(product);
+                break;
+              }
+
+              product.serverId = fetchedProduct.serverId;
+              await databaseService.updateProductServerId(product);
+            }
+
+            await backendService.updateProduct(product);
+            await databaseService.updateProductSyncStatus(product);
+            break;
+
+          case SyncStatus.pendingDelete:
+            await backendService.deleteProduct(product);
+            await databaseService.updateProductSyncStatus(product);
+            break;
+
+          default:
+            break;
+        }
       }
     }
-  }
-
-  void dispose() {
-    _subscription?.cancel();
   }
 }

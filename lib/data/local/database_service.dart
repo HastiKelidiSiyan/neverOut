@@ -74,12 +74,12 @@ class DatabaseService {
     );
   }
 
-  Future<void> updateProductSyncStatus(Product product) async {
+  Future<void> updateProductSyncStatus(Product product, SyncStatus syncStatus) async {
     final db = await database;
     await db.update(
       'products',
       {
-        'sync_status': 'synced',
+        'sync_status': syncStatus.name,
       },
       where: 'database_id = ?',
       whereArgs: [product.databaseId],

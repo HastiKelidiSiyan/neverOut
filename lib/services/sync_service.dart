@@ -45,7 +45,10 @@ class SyncService {
               await databaseService.updateProductServerId(product);
             }
 
-            await databaseService.updateProductSyncStatus(product);
+            await databaseService.updateProductSyncStatus(
+              product,
+              SyncStatus.synced,
+            );
             break;
 
           case SyncStatus.pendingUpdate:
@@ -56,7 +59,10 @@ class SyncService {
                 await backendService.addProduct(product);
                 final createdProduct = await backendService.getProduct(product);
                 await databaseService.updateProductServerId(createdProduct);
-                await databaseService.updateProductSyncStatus(product);
+                await databaseService.updateProductSyncStatus(
+                  product,
+                  SyncStatus.synced,
+                );
                 break;
               }
 
@@ -65,7 +71,10 @@ class SyncService {
             }
 
             await backendService.updateProduct(product);
-            await databaseService.updateProductSyncStatus(product);
+            await databaseService.updateProductSyncStatus(
+              product,
+              SyncStatus.synced,
+            );
             break;
 
           case SyncStatus.pendingDelete:

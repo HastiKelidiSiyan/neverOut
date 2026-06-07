@@ -1,21 +1,22 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:never_out/data/local/database_service.dart';
-import 'package:never_out/data/remote/backend_service.dart';
-import 'package:never_out/models/product.dart';
+import 'package:never_out/data_sources/local_data_source.dart';
+import 'package:never_out/data_sources/remote/backend_service.dart';
+import 'package:never_out/database/database.dart';
+import 'package:never_out/models/product_model.dart';
 import 'package:never_out/services/sync_service.dart';
 
 class ProductRepository {
   ProductRepository({
-    DatabaseService? databaseService,
+    LocalDataSource? localDataSource,
     Connectivity? connectivity,
     BackendService? backendService,
     SyncService? syncService,
-  }) : databaseService = databaseService ?? DatabaseService(),
+  }) : localDataSource = localDataSource ?? LocalDataSource(AppDatabase()),
        connectivity = connectivity ?? Connectivity(),
        _backendService = backendService,
        _syncService = syncService;
 
-  final DatabaseService databaseService;
+  final LocalDataSource localDataSource;
   final Connectivity connectivity;
   final BackendService? _backendService;
   final SyncService? _syncService;
@@ -26,42 +27,45 @@ class ProductRepository {
   late final SyncService syncService =
       _syncService ??
       SyncService(
-        databaseService: databaseService,
+        localDataSource: localDataSource,
         backendService: backendService,
         connectivity: connectivity,
       );
 
-  Future<List<Product>> getProducts() async {
-    return databaseService.products();
+  Future<List<ProductModel>> getProducts() async {
+    return localDataSource.products();
   }
 
-  Future<void> addProduct(Product product) async {
+  Future<void> addProduct(ProductModel product) async {
     try {
-      await databaseService.addProduct(product);
+      await localDataSource.addProduct(product);
     } catch (e) {
       throw Exception('Error Adding Product: $e');
     }
   }
 
-  Future<void> updateProduct(Product product) async {
+  Future<void> updateProduct(ProductModel product) async {
     try {
-      await databaseService.updateProduct(product);
+      await localDataSource.updateProduct(product);
     } catch (e) {
       throw Exception('Error Updating Product: $e');
     }
   }
 
-  Future<void> deleteProduct(Product product) async {
+  Future<void> deleteProduct(ProductModel product) async {
     try {
-      await databaseService.deleteProduct(product);
+      await localDataSource.deleteProduct(product);
     } catch (e) {
       throw Exception('Error Deleting Product: $e');
     }
   }
 
-  Future<void> setDeleted (Product product) async {
+  Future<void> setDeleted(ProductModel product) async {
     try {
-      await databaseService.updateProductSyncStatus(product, SyncStatus.pendingDelete);
+      await localDataSource.updateProductSyncStatus(
+        product,
+        SyncStatus.pendingDelete,
+      );
     } catch (e) {
       throw Exception('Error Deleting Product: $e');
     }

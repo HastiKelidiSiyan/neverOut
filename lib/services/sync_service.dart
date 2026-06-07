@@ -1,20 +1,21 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:never_out/data/local/database_service.dart';
-import 'package:never_out/data/remote/backend_service.dart';
-import 'package:never_out/models/product.dart';
+import 'package:never_out/data_sources/local_data_source.dart';
+import 'package:never_out/data_sources/remote/backend_service.dart';
+import 'package:never_out/database/database.dart';
+import 'package:never_out/models/product_model.dart';
 
 class SyncService {
   SyncService({
-    DatabaseService? databaseService,
+    LocalDataSource? localDataSource,
     BackendService? backendService,
     Connectivity? connectivity,
-  }) : databaseService = databaseService ?? DatabaseService(),
+  }) : localDataSource = localDataSource ?? LocalDataSource(AppDatabase()),
        backendService = backendService ?? BackendService(),
        connectivity = connectivity ?? Connectivity();
 
-  final DatabaseService databaseService;
+  final LocalDataSource localDataSource;
   final BackendService backendService;
   final Connectivity connectivity;
 
@@ -24,7 +25,7 @@ class SyncService {
 
     if (connectivityResult.contains(ConnectivityResult.wifi) ||
         connectivityResult.contains(ConnectivityResult.mobile)) {
-      final pendingProducts = await databaseService.getPendingProducts();
+      final pendingProducts = await localDataSource.getPendingProducts();
 
       if (pendingProducts.isEmpty) {
         return;
@@ -38,14 +39,14 @@ class SyncService {
             if (fetchedProduct == null) {
               await backendService.addProduct(product);
               final createdProduct = await backendService.getProduct(product);
-              await databaseService.updateProductServerId(createdProduct);
+              await localDataSource.updateProductServerId(createdProduct);
             } else {
               product.serverId = fetchedProduct.serverId;
               await backendService.updateProduct(product);
-              await databaseService.updateProductServerId(product);
+              await localDataSource.updateProductServerId(product);
             }
 
-            await databaseService.updateProductSyncStatus(
+            await localDataSource.updateProductSyncStatus(
               product,
               SyncStatus.synced,
             );
@@ -58,8 +59,8 @@ class SyncService {
               if (fetchedProduct == null) {
                 await backendService.addProduct(product);
                 final createdProduct = await backendService.getProduct(product);
-                await databaseService.updateProductServerId(createdProduct);
-                await databaseService.updateProductSyncStatus(
+                await localDataSource.updateProductServerId(createdProduct);
+                await localDataSource.updateProductSyncStatus(
                   product,
                   SyncStatus.synced,
                 );
@@ -67,11 +68,11 @@ class SyncService {
               }
 
               product.serverId = fetchedProduct.serverId;
-              await databaseService.updateProductServerId(product);
+              await localDataSource.updateProductServerId(product);
             }
 
             await backendService.updateProduct(product);
-            await databaseService.updateProductSyncStatus(
+            await localDataSource.updateProductSyncStatus(
               product,
               SyncStatus.synced,
             );
@@ -79,7 +80,7 @@ class SyncService {
 
           case SyncStatus.pendingDelete:
             await backendService.deleteProduct(product);
-            await databaseService.updateProductSyncStatus(
+            await localDataSource.updateProductSyncStatus(
               product,
               SyncStatus.deleted,
             );
@@ -87,7 +88,7 @@ class SyncService {
             break;
 
           case SyncStatus.deleted:
-            await databaseService.deleteProduct(product);
+            await localDataSource.deleteProduct(product);
             break;
 
           default:

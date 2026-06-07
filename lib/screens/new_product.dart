@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:never_out/models/product.dart';
+import 'package:never_out/models/product_model.dart';
 import 'package:never_out/screens/icon_select.dart';
 import 'package:never_out/theme/app_colors.dart';
 import 'package:never_out/theme/app_component_styles.dart';
@@ -14,7 +14,7 @@ class NewProductScreen extends StatefulWidget {
     this.product,
   });
 
-  final Product? product;
+  final ProductModel? product;
 
   @override
   State<NewProductScreen> createState() => _NewProductScreenState();
@@ -142,7 +142,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
     final validatedQuantity = quantity!;
     final existingProduct = widget.product;
 
-    final product = Product(
+    final product = ProductModel(
       serverId: existingProduct?.serverId,
       databaseId: existingProduct?.databaseId,
       name: name,
@@ -161,7 +161,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
     Navigator.pop(context, product);
   }
 
-  SyncStatus _syncStatusForEditedProduct(Product product) {
+  SyncStatus _syncStatusForEditedProduct(ProductModel product) {
     if (product.syncStatus == SyncStatus.pendingCreate) {
       return SyncStatus.pendingCreate;
     }

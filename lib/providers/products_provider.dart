@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:never_out/models/product.dart';
+import 'package:never_out/models/product_model.dart';
 import 'package:never_out/repositories/product_repository.dart';
 
 class ProductsProvider extends ChangeNotifier {
@@ -9,9 +9,9 @@ class ProductsProvider extends ChangeNotifier {
 
   ProductsProvider(this.productRepository);
 
-  List<Product> _products = [];
+  List<ProductModel> _products = [];
 
-  List<Product> get products => List.unmodifiable(_products);
+  List<ProductModel> get products => List.unmodifiable(_products);
 
   bool _isLoading = false;
 
@@ -46,7 +46,7 @@ class ProductsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addProduct(Product product) async {
+  Future<void> addProduct(ProductModel product) async {
     try {
       await productRepository.addProduct(product);
     } catch (e) {
@@ -58,7 +58,7 @@ class ProductsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateProduct(Product updatedProduct) async {
+  Future<void> updateProduct(ProductModel updatedProduct) async {
     await productRepository.updateProduct(updatedProduct);
 
     await loadProducts();
@@ -66,7 +66,7 @@ class ProductsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteProduct(Product product) async {
+  Future<void> deleteProduct(ProductModel product) async {
     await productRepository.deleteProduct(product);
 
     await loadProducts();
@@ -74,7 +74,7 @@ class ProductsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setDeleted(Product product) async {
+  Future<void> setDeleted(ProductModel product) async {
     await productRepository.setDeleted(product);
 
     await loadProducts();

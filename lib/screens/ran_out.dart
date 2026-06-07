@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:never_out/models/product.dart';
+import 'package:never_out/models/product_model.dart';
 import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/theme/app_colors.dart';
 import 'package:never_out/theme/app_constants.dart';
@@ -29,7 +29,7 @@ class RanOutScreen extends StatelessWidget {
   Widget _buildBody(
     BuildContext context,
     ProductsProvider productsProvider,
-    List<Product> products,
+    List<ProductModel> products,
     Object? error,
   ) {
     final textTheme = Theme.of(context).textTheme;

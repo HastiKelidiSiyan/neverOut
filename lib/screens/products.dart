@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:never_out/models/product.dart';
+import 'package:never_out/models/product_model.dart';
 import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/screens/new_product.dart';
 import 'package:never_out/theme/app_constants.dart';
@@ -25,7 +25,7 @@ class ProductsScreen extends StatelessWidget {
           final messenger = ScaffoldMessenger.of(context);
           final productsProvider = ProductsProviderScope.read(context);
 
-          final newProduct = await navigator.push<Product>(
+          final newProduct = await navigator.push<ProductModel>(
             MaterialPageRoute(
               builder: (context) => const NewProductScreen(),
             ),
@@ -52,7 +52,7 @@ class ProductsScreen extends StatelessWidget {
   Widget _buildBody(
     BuildContext context,
     ProductsProvider productsProvider,
-    List<Product> products,
+    List<ProductModel> products,
     Object? error,
   ) {
     final textTheme = Theme.of(context).textTheme;

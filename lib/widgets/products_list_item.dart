@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:never_out/models/product.dart';
+import 'package:never_out/models/product_model.dart';
 import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/screens/new_product.dart';
 import 'package:never_out/theme/app_colors.dart';
@@ -11,7 +11,7 @@ class ProductsListItem extends StatelessWidget {
     required this.product,
   });
 
-  final Product product;
+  final ProductModel product;
 
   Color _borderColor(AppThemeColors colors) {
     return product.isLow ? colors.lowProductBorder : colors.productBorder;
@@ -71,7 +71,7 @@ class ProductsListItem extends StatelessWidget {
             final messenger = ScaffoldMessenger.of(context);
             final productsProvider = ProductsProviderScope.read(context);
 
-            final editedProduct = await navigator.push<Product>(
+            final editedProduct = await navigator.push<ProductModel>(
               MaterialPageRoute(
                 builder: (context) => NewProductScreen(
                   product: product,
@@ -140,7 +140,7 @@ class ProductsListItem extends StatelessWidget {
                         style: theme.textTheme.titleMedium,
                       ),
                       Text(
-                        'Updated ${timeAgo(product.updatedAt!)}',
+                        'Updated ${timeAgo(product.updatedAt)}',
                         style: theme.textTheme.titleMedium!.copyWith(
                           fontWeight: FontWeight.normal,
                         ),

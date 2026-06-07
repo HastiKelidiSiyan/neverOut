@@ -16,10 +16,6 @@ class LocalDataSource {
     return getProducts();
   }
 
-  Future<List<ProductModel>> getPosts() {
-    return getProducts();
-  }
-
   Future<void> addProduct(ProductModel product) async {
     try {
       await _database

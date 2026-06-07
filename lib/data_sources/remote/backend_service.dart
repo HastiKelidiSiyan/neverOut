@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:never_out/models/product.dart';
+import 'package:never_out/models/product_model.dart';
 
 class BackendService {
   final SupabaseClient _supabaseClient = Supabase.instance.client;
   final String _tableName = 'products';
 
-  Future<void> addProduct(Product product) async {
+  Future<void> addProduct(ProductModel product) async {
     try {
       await _supabaseClient.from(_tableName).insert(product.toJson());
     } catch (e) {
@@ -16,7 +16,7 @@ class BackendService {
     }
   }
 
-  Future<List<Product>> fetchProducts() async {
+  Future<List<ProductModel>> fetchProducts() async {
     try {
       final response = await _supabaseClient
           .from(_tableName)
@@ -24,8 +24,8 @@ class BackendService {
           .timeout(
             Duration(seconds: 30),
           );
-      final List<Product> products = (response as List<dynamic>)
-          .map((json) => Product.fromJson(json))
+      final List<ProductModel> products = (response as List<dynamic>)
+          .map((json) => ProductModel.fromJson(json))
           .toList();
       return products;
     } on TimeoutException {
@@ -37,7 +37,7 @@ class BackendService {
     }
   }
 
-  Future<void> updateProduct(Product product) async {
+  Future<void> updateProduct(ProductModel product) async {
     try {
       final serverId = product.serverId;
 
@@ -56,7 +56,7 @@ class BackendService {
     }
   }
 
-  Future<void> deleteProduct(Product product) async {
+  Future<void> deleteProduct(ProductModel product) async {
     try {
       final serverId = product.serverId;
 
@@ -64,10 +64,7 @@ class BackendService {
         throw Exception('Product server id has not been synced yet');
       }
 
-      await _supabaseClient
-          .from(_tableName)
-          .delete()
-          .eq('server_id', serverId);
+      await _supabaseClient.from(_tableName).delete().eq('server_id', serverId);
       print('Product deleted from Supabase successfully!');
     } catch (e) {
       print('Error deleting product from Supabase: $e');
@@ -75,7 +72,7 @@ class BackendService {
     }
   }
 
-  Future<Product> getProduct(Product product) async {
+  Future<ProductModel> getProduct(ProductModel product) async {
     try {
       final data = await _supabaseClient
           .from(_tableName)
@@ -83,13 +80,13 @@ class BackendService {
           .eq('database_id', product.databaseId!)
           .single();
 
-      return Product.fromJson(data);
+      return ProductModel.fromJson(data);
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<Product?> findProduct(Product product) async {
+  Future<ProductModel?> findProduct(ProductModel product) async {
     try {
       final data = await _supabaseClient
           .from(_tableName)
@@ -101,7 +98,7 @@ class BackendService {
         return null;
       }
 
-      return Product.fromJson(data.first);
+      return ProductModel.fromJson(data.first);
     } catch (e) {
       rethrow;
     }

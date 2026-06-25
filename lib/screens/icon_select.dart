@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:never_out/data/categories.dart';
+import 'package:never_out/widgets/icon_category.dart';
 
 class IconSelectScreen extends StatefulWidget {
   const IconSelectScreen({super.key});
@@ -14,7 +16,15 @@ class _IconSelectScreenState extends State<IconSelectScreen> {
       appBar: AppBar(
         title: Text('Select an Icon'),
       ),
-      body: Center(child: Text('Icon Select Screen', style: Theme.of(context).textTheme.titleLarge,)),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: ListView.builder(
+          itemCount: Categories.all.length,
+          itemBuilder: (context, index) {
+            return IconCategory(category: Categories.all[index]);
+          },
+        ),
+      ),
     );
   }
 }

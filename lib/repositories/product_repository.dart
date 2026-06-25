@@ -1,6 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:never_out/data_sources/local/local_data_source.dart';
-import 'package:never_out/data_sources/remote/backend_service.dart';
+import 'package:never_out/data/local/local_data_source.dart';
+import 'package:never_out/data/remote/backend_service.dart';
 import 'package:never_out/database/database.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/services/sync_service.dart';

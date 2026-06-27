@@ -2,8 +2,6 @@ enum UnitType { kilogram, liter, piece, box }
 
 enum SyncStatus { synced, pendingCreate, pendingUpdate, pendingDelete, deleted }
 
-enum Category { foodAndGroceries, cleaningSupplies, personalCareAndHygiene, kitchenEssentials, homeSupplies, laundryAndFabricCare, misc }
-
 class ProductModel {
   ProductModel({
     this.serverId,

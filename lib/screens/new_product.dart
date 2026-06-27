@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/screens/icon_select.dart';
 import 'package:never_out/theme/app_colors.dart';
@@ -152,6 +153,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
       syncStatus: _isEditing
           ? _syncStatusForEditedProduct(existingProduct!)
           : SyncStatus.pendingCreate,
+          iconData: FontAwesomeIcons.toilet
     );
 
     if (!mounted) {
@@ -185,7 +187,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
         errorText: _titleErrorText,
         prefixIcon: InkWell(
           onTap: () {
-            Navigator.of(context).push(
+            final iconData = Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const IconSelectScreen(),
               ),

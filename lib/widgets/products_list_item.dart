@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/screens/new_product.dart';
@@ -125,8 +126,8 @@ class ProductsListItem extends StatelessWidget {
                   const SizedBox(width: AppSpacing.large),
                   CircleAvatar(
                     backgroundColor: _quantityColor(appColors),
-                    child: Icon(
-                      Icons.circle_rounded,
+                    child: FaIcon(
+                      product.iconData,
                       color: appColors.iconMuted,
                     ),
                   ),

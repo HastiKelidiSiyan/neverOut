@@ -1,4 +1,6 @@
 import 'package:drift/drift.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:never_out/database/database.dart' as db;
 import 'package:never_out/models/product_model.dart';
 
@@ -94,6 +96,13 @@ class LocalDataSource {
       unitType: UnitType.values.byName(product.unitType),
       updatedAt: product.updatedAt,
       syncStatus: SyncStatus.values.byName(product.syncStatus),
+      iconData: FaIconData(
+        IconData(
+          product.iconCodePoint,
+          fontFamily: "FontAwesomeSolid",
+          fontPackage: "font_awesome_flutter",
+        ),
+      ),
     );
   }
 
@@ -110,6 +119,7 @@ class LocalDataSource {
       quantity: product.quantity,
       unitType: product.unitType.name,
       syncStatus: product.syncStatus.name,
+      iconCodePoint: product.iconData.codePoint
     );
   }
 
@@ -123,6 +133,7 @@ class LocalDataSource {
       quantity: Value(product.quantity),
       unitType: Value(product.unitType.name),
       syncStatus: Value(product.syncStatus.name),
+      iconCodePoint: Value(product.iconData.codePoint),
     );
   }
 

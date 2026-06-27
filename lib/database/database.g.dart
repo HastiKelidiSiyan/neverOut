@@ -89,6 +89,17 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _iconCodePointMeta = const VerificationMeta(
+    'iconCodePoint',
+  );
+  @override
+  late final GeneratedColumn<int> iconCodePoint = GeneratedColumn<int>(
+    'icon_code_point',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     databaseId,
@@ -98,6 +109,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     quantity,
     unitType,
     syncStatus,
+    iconCodePoint,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -161,6 +173,17 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     } else if (isInserting) {
       context.missing(_syncStatusMeta);
     }
+    if (data.containsKey('icon_code_point')) {
+      context.handle(
+        _iconCodePointMeta,
+        iconCodePoint.isAcceptableOrUnknown(
+          data['icon_code_point']!,
+          _iconCodePointMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_iconCodePointMeta);
+    }
     return context;
   }
 
@@ -198,6 +221,10 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         DriftSqlType.string,
         data['${effectivePrefix}sync_status'],
       )!,
+      iconCodePoint: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}icon_code_point'],
+      )!,
     );
   }
 
@@ -215,6 +242,7 @@ class Product extends DataClass implements Insertable<Product> {
   final int quantity;
   final String unitType;
   final String syncStatus;
+  final int iconCodePoint;
   const Product({
     required this.databaseId,
     this.serverId,
@@ -223,6 +251,7 @@ class Product extends DataClass implements Insertable<Product> {
     required this.quantity,
     required this.unitType,
     required this.syncStatus,
+    required this.iconCodePoint,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -236,6 +265,7 @@ class Product extends DataClass implements Insertable<Product> {
     map['quantity'] = Variable<int>(quantity);
     map['unit_type'] = Variable<String>(unitType);
     map['sync_status'] = Variable<String>(syncStatus);
+    map['icon_code_point'] = Variable<int>(iconCodePoint);
     return map;
   }
 
@@ -250,6 +280,7 @@ class Product extends DataClass implements Insertable<Product> {
       quantity: Value(quantity),
       unitType: Value(unitType),
       syncStatus: Value(syncStatus),
+      iconCodePoint: Value(iconCodePoint),
     );
   }
 
@@ -266,6 +297,7 @@ class Product extends DataClass implements Insertable<Product> {
       quantity: serializer.fromJson<int>(json['quantity']),
       unitType: serializer.fromJson<String>(json['unitType']),
       syncStatus: serializer.fromJson<String>(json['syncStatus']),
+      iconCodePoint: serializer.fromJson<int>(json['iconCodePoint']),
     );
   }
   @override
@@ -279,6 +311,7 @@ class Product extends DataClass implements Insertable<Product> {
       'quantity': serializer.toJson<int>(quantity),
       'unitType': serializer.toJson<String>(unitType),
       'syncStatus': serializer.toJson<String>(syncStatus),
+      'iconCodePoint': serializer.toJson<int>(iconCodePoint),
     };
   }
 
@@ -290,6 +323,7 @@ class Product extends DataClass implements Insertable<Product> {
     int? quantity,
     String? unitType,
     String? syncStatus,
+    int? iconCodePoint,
   }) => Product(
     databaseId: databaseId ?? this.databaseId,
     serverId: serverId.present ? serverId.value : this.serverId,
@@ -298,6 +332,7 @@ class Product extends DataClass implements Insertable<Product> {
     quantity: quantity ?? this.quantity,
     unitType: unitType ?? this.unitType,
     syncStatus: syncStatus ?? this.syncStatus,
+    iconCodePoint: iconCodePoint ?? this.iconCodePoint,
   );
   Product copyWithCompanion(ProductsCompanion data) {
     return Product(
@@ -312,6 +347,9 @@ class Product extends DataClass implements Insertable<Product> {
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      iconCodePoint: data.iconCodePoint.present
+          ? data.iconCodePoint.value
+          : this.iconCodePoint,
     );
   }
 
@@ -324,7 +362,8 @@ class Product extends DataClass implements Insertable<Product> {
           ..write('updatedAt: $updatedAt, ')
           ..write('quantity: $quantity, ')
           ..write('unitType: $unitType, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('iconCodePoint: $iconCodePoint')
           ..write(')'))
         .toString();
   }
@@ -338,6 +377,7 @@ class Product extends DataClass implements Insertable<Product> {
     quantity,
     unitType,
     syncStatus,
+    iconCodePoint,
   );
   @override
   bool operator ==(Object other) =>
@@ -349,7 +389,8 @@ class Product extends DataClass implements Insertable<Product> {
           other.updatedAt == this.updatedAt &&
           other.quantity == this.quantity &&
           other.unitType == this.unitType &&
-          other.syncStatus == this.syncStatus);
+          other.syncStatus == this.syncStatus &&
+          other.iconCodePoint == this.iconCodePoint);
 }
 
 class ProductsCompanion extends UpdateCompanion<Product> {
@@ -360,6 +401,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<int> quantity;
   final Value<String> unitType;
   final Value<String> syncStatus;
+  final Value<int> iconCodePoint;
   const ProductsCompanion({
     this.databaseId = const Value.absent(),
     this.serverId = const Value.absent(),
@@ -368,6 +410,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.quantity = const Value.absent(),
     this.unitType = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.iconCodePoint = const Value.absent(),
   });
   ProductsCompanion.insert({
     this.databaseId = const Value.absent(),
@@ -377,10 +420,12 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     required int quantity,
     required String unitType,
     required String syncStatus,
+    required int iconCodePoint,
   }) : name = Value(name),
        quantity = Value(quantity),
        unitType = Value(unitType),
-       syncStatus = Value(syncStatus);
+       syncStatus = Value(syncStatus),
+       iconCodePoint = Value(iconCodePoint);
   static Insertable<Product> custom({
     Expression<int>? databaseId,
     Expression<int>? serverId,
@@ -389,6 +434,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Expression<int>? quantity,
     Expression<String>? unitType,
     Expression<String>? syncStatus,
+    Expression<int>? iconCodePoint,
   }) {
     return RawValuesInsertable({
       if (databaseId != null) 'database_id': databaseId,
@@ -398,6 +444,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       if (quantity != null) 'quantity': quantity,
       if (unitType != null) 'unit_type': unitType,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (iconCodePoint != null) 'icon_code_point': iconCodePoint,
     });
   }
 
@@ -409,6 +456,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Value<int>? quantity,
     Value<String>? unitType,
     Value<String>? syncStatus,
+    Value<int>? iconCodePoint,
   }) {
     return ProductsCompanion(
       databaseId: databaseId ?? this.databaseId,
@@ -418,6 +466,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       quantity: quantity ?? this.quantity,
       unitType: unitType ?? this.unitType,
       syncStatus: syncStatus ?? this.syncStatus,
+      iconCodePoint: iconCodePoint ?? this.iconCodePoint,
     );
   }
 
@@ -445,6 +494,9 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<String>(syncStatus.value);
     }
+    if (iconCodePoint.present) {
+      map['icon_code_point'] = Variable<int>(iconCodePoint.value);
+    }
     return map;
   }
 
@@ -457,7 +509,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
           ..write('updatedAt: $updatedAt, ')
           ..write('quantity: $quantity, ')
           ..write('unitType: $unitType, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('iconCodePoint: $iconCodePoint')
           ..write(')'))
         .toString();
   }
@@ -483,6 +536,7 @@ typedef $$ProductsTableCreateCompanionBuilder =
       required int quantity,
       required String unitType,
       required String syncStatus,
+      required int iconCodePoint,
     });
 typedef $$ProductsTableUpdateCompanionBuilder =
     ProductsCompanion Function({
@@ -493,6 +547,7 @@ typedef $$ProductsTableUpdateCompanionBuilder =
       Value<int> quantity,
       Value<String> unitType,
       Value<String> syncStatus,
+      Value<int> iconCodePoint,
     });
 
 class $$ProductsTableFilterComposer
@@ -536,6 +591,11 @@ class $$ProductsTableFilterComposer
 
   ColumnFilters<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get iconCodePoint => $composableBuilder(
+    column: $table.iconCodePoint,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -583,6 +643,11 @@ class $$ProductsTableOrderingComposer
     column: $table.syncStatus,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get iconCodePoint => $composableBuilder(
+    column: $table.iconCodePoint,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ProductsTableAnnotationComposer
@@ -616,6 +681,11 @@ class $$ProductsTableAnnotationComposer
 
   GeneratedColumn<String> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get iconCodePoint => $composableBuilder(
+    column: $table.iconCodePoint,
     builder: (column) => column,
   );
 }
@@ -655,6 +725,7 @@ class $$ProductsTableTableManager
                 Value<int> quantity = const Value.absent(),
                 Value<String> unitType = const Value.absent(),
                 Value<String> syncStatus = const Value.absent(),
+                Value<int> iconCodePoint = const Value.absent(),
               }) => ProductsCompanion(
                 databaseId: databaseId,
                 serverId: serverId,
@@ -663,6 +734,7 @@ class $$ProductsTableTableManager
                 quantity: quantity,
                 unitType: unitType,
                 syncStatus: syncStatus,
+                iconCodePoint: iconCodePoint,
               ),
           createCompanionCallback:
               ({
@@ -673,6 +745,7 @@ class $$ProductsTableTableManager
                 required int quantity,
                 required String unitType,
                 required String syncStatus,
+                required int iconCodePoint,
               }) => ProductsCompanion.insert(
                 databaseId: databaseId,
                 serverId: serverId,
@@ -681,6 +754,7 @@ class $$ProductsTableTableManager
                 quantity: quantity,
                 unitType: unitType,
                 syncStatus: syncStatus,
+                iconCodePoint: iconCodePoint,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 enum UnitType { kilogram, liter, piece, box }
 
 enum SyncStatus { synced, pendingCreate, pendingUpdate, pendingDelete, deleted }
@@ -11,6 +14,7 @@ class ProductModel {
     required this.unitType,
     DateTime? updatedAt,
     required this.syncStatus,
+    required this.iconData,
   }) : updatedAt = updatedAt ?? DateTime.now();
 
   int? serverId;
@@ -20,6 +24,7 @@ class ProductModel {
   final UnitType unitType;
   final DateTime updatedAt;
   final SyncStatus syncStatus;
+  final FaIconData iconData;
 
   bool get isLow => quantity <= 1;
 
@@ -31,6 +36,7 @@ class ProductModel {
     'unit_type': unitType.name,
     'updated_at': updatedAt,
     'sync_status': syncStatus.name,
+    'icon_code_point': iconData.codePoint,
   };
 
   factory ProductModel.fromMap(Map<String, dynamic> map) {
@@ -42,6 +48,13 @@ class ProductModel {
       unitType: UnitType.values.byName(map['unit_type'].toString()),
       updatedAt: _dateTime(map['updated_at']),
       syncStatus: SyncStatus.values.byName(map['sync_status'].toString()),
+      iconData: FaIconData(
+        IconData(
+          map['icon_code_point'],
+          fontFamily: "FontAwesomeSolid",
+          fontPackage: "font_awesome_flutter",
+        ),
+      ),
     );
   }
 
@@ -51,6 +64,7 @@ class ProductModel {
     'quantity': quantity,
     'unit_type': unitType.name,
     'updated_at': updatedAt.toUtc().toIso8601String(),
+    'icon_code_point': iconData.codePoint,
   };
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -62,6 +76,13 @@ class ProductModel {
       unitType: UnitType.values.byName(json['unit_type'].toString()),
       updatedAt: _dateTime(json['updated_at']),
       syncStatus: SyncStatus.synced,
+      iconData: FaIconData(
+        IconData(
+          json['icon_code_point'],
+          fontFamily: "FontAwesomeSolid",
+          fontPackage: "font_awesome_flutter",
+        ),
+      ),
     );
   }
 }

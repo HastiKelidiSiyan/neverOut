@@ -8,4 +8,5 @@ class Products extends Table {
   IntColumn get quantity => integer()();
   TextColumn get unitType => text()();
   TextColumn get syncStatus => text()();
+  IntColumn get iconCodePoint => integer()();
 }

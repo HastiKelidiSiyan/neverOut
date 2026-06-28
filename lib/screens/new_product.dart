@@ -31,6 +31,8 @@ class _NewProductScreenState extends State<NewProductScreen> {
   String? _quantityErrorText;
   bool _isSubmitting = false;
 
+  FaIconData? iconData;
+
   bool get _isEditing => widget.product != null;
 
   @override
@@ -40,6 +42,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
     final product = widget.product;
     _quantity = product?.quantity ?? 1;
     _selectedUnitType = product?.unitType ?? UnitType.kilogram;
+    iconData = product?.iconData ?? FontAwesomeIcons.boxOpen;
 
     _titleController = TextEditingController(text: product?.name ?? '');
     _quantityController = TextEditingController(text: _quantity.toString());
@@ -153,7 +156,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
       syncStatus: _isEditing
           ? _syncStatusForEditedProduct(existingProduct!)
           : SyncStatus.pendingCreate,
-          iconData: FontAwesomeIcons.toilet
+      iconData: iconData!,
     );
 
     if (!mounted) {
@@ -186,14 +189,20 @@ class _NewProductScreenState extends State<NewProductScreen> {
       decoration: InputDecoration(
         errorText: _titleErrorText,
         prefixIcon: InkWell(
-          onTap: () {
-            final iconData = Navigator.of(context).push(
+          onTap: () async {
+            final newIconData = await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const IconSelectScreen(),
               ),
             );
+            setState(() {
+              iconData = newIconData;
+            });
           },
-          child: Icon(Icons.crop_square, color: appColors.iconMuted),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+            child: FaIcon(iconData),
+          ),
         ),
         label: Text(
           'Enter Product Name',

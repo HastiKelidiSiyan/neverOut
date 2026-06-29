@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:never_out/theme/app_colors.dart';
+import 'package:never_out/theme/app_constants.dart';
 
-class IconCategoryItem extends StatefulWidget {
+class IconCategoryItem extends StatelessWidget {
   const IconCategoryItem({
     super.key,
     required this.iconData,
@@ -14,31 +16,42 @@ class IconCategoryItem extends StatefulWidget {
   final bool isSelected;
 
   @override
-  State<IconCategoryItem> createState() => _IconCategoryItemState();
-}
-
-class _IconCategoryItemState extends State<IconCategoryItem> {
-  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final appColors = theme.extension<AppThemeColors>()!;
+    final colorScheme = theme.colorScheme;
+    final backgroundColor = isSelected
+        ? colorScheme.primary
+        : appColors.secondaryButtonBackground;
+    final borderColor = isSelected
+        ? colorScheme.primary
+        : appColors.secondaryButtonBorder;
+    final iconColor = isSelected ? colorScheme.onPrimary : appColors.iconMuted;
+
     return InkWell(
+      borderRadius: BorderRadius.circular(AppRadius.small),
       onTap: () {
-        widget.onIconSelect(widget.iconData);
+        onIconSelect(iconData);
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: AppDurations.short,
+        curve: Curves.easeOut,
         width: 60,
         height: 60,
         decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(AppRadius.small),
           border: Border.all(
-            color: widget.isSelected ? Colors.black : Colors.grey,
-            width: widget.isSelected ? 2 : 1,
+            color: borderColor,
+            width: isSelected
+                ? AppBorderWidths.regular
+                : AppBorderWidths.thin,
           ),
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.white,
         ),
         child: Center(
           child: FaIcon(
-            color: Colors.black,
-            widget.iconData,
+            iconData,
+            color: iconColor,
           ),
         ),
       ),

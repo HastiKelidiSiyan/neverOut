@@ -24,8 +24,6 @@ class Categories {
       FontAwesomeIcons.breadSlice,
       FontAwesomeIcons.wheatAwn,
       FontAwesomeIcons.bacon,
-      FontAwesomeIcons.jar,
-      FontAwesomeIcons.iceCream,
       FontAwesomeIcons.stroopwafel,
       FontAwesomeIcons.hotdog,
       FontAwesomeIcons.jarWheat,

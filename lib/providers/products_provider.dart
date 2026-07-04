@@ -1,17 +1,18 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/repositories/product_repository.dart';
 
-class ProductsProvider extends ChangeNotifier {
+final productsProvider =
+    StateNotifierProvider<ProductsNotifier, List<ProductModel>>((ref) {
+  return ProductsNotifier(ProductRepository())..loadProducts();
+});
+
+class ProductsNotifier extends StateNotifier<List<ProductModel>> {
   final ProductRepository productRepository;
 
-  ProductsProvider(this.productRepository);
-
-  List<ProductModel> _products = [];
-
-  List<ProductModel> get products => List.unmodifiable(_products);
+  ProductsNotifier(this.productRepository) : super(const []);
 
   bool _isLoading = false;
 
@@ -28,12 +29,11 @@ class ProductsProvider extends ChangeNotifier {
   Future<void> loadProducts() async {
     _isLoading = true;
     _error = null;
-    notifyListeners();
 
     try {
       final products = await productRepository.getProducts();
 
-      _products = products
+      state = products
           .where(
             (product) => product.syncStatus != SyncStatus.pendingDelete,
           )
@@ -43,7 +43,6 @@ class ProductsProvider extends ChangeNotifier {
     }
 
     _isLoading = false;
-    notifyListeners();
   }
 
   Future<void> addProduct(ProductModel product) async {
@@ -55,7 +54,6 @@ class ProductsProvider extends ChangeNotifier {
 
     await loadProducts();
     unawaited(syncProducts());
-    notifyListeners();
   }
 
   Future<void> updateProduct(ProductModel updatedProduct) async {
@@ -63,7 +61,6 @@ class ProductsProvider extends ChangeNotifier {
 
     await loadProducts();
     unawaited(syncProducts());
-    notifyListeners();
   }
 
   Future<void> deleteProduct(ProductModel product) async {
@@ -71,7 +68,6 @@ class ProductsProvider extends ChangeNotifier {
 
     await loadProducts();
     unawaited(syncProducts());
-    notifyListeners();
   }
 
   Future<void> setDeleted(ProductModel product) async {
@@ -79,13 +75,11 @@ class ProductsProvider extends ChangeNotifier {
 
     await loadProducts();
     unawaited(syncProducts());
-    notifyListeners();
   }
 
   Future<void> syncProducts() async {
     _isSyncing = true;
     _error = null;
-    notifyListeners();
 
     try {
       await productRepository.syncPendingProducts();
@@ -95,36 +89,5 @@ class ProductsProvider extends ChangeNotifier {
     }
 
     _isSyncing = false;
-    notifyListeners();
-  }
-}
-
-class ProductsProviderScope extends InheritedNotifier<ProductsProvider> {
-  const ProductsProviderScope({
-    super.key,
-    required ProductsProvider provider,
-    required super.child,
-  }) : super(notifier: provider);
-
-  static ProductsProvider watch(BuildContext context) {
-    final widget = context
-        .dependOnInheritedWidgetOfExactType<ProductsProviderScope>();
-
-    assert(widget != null, 'No provider found');
-
-    return widget!.notifier!;
-  }
-
-  static ProductsProvider read(BuildContext context) {
-    final widget = context
-        .getInheritedWidgetOfExactType<ProductsProviderScope>();
-
-    assert(widget != null, 'No provider found');
-
-    return widget!.notifier!;
-  }
-
-  static ProductsProvider of(BuildContext context) {
-    return watch(context);
   }
 }

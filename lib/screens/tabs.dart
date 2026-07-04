@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/screens/products.dart';
 import 'package:never_out/screens/ran_out.dart';
 import 'package:never_out/theme/app_colors.dart';
 
-class Tabs extends StatefulWidget {
+class Tabs extends ConsumerStatefulWidget {
   const Tabs({
     super.key,
   });
 
   @override
-  State<Tabs> createState() => _TabsState();
+  ConsumerState<Tabs> createState() => _TabsState();
 }
 
-class _TabsState extends State<Tabs> {
+class _TabsState extends ConsumerState<Tabs> {
   int selectedPageIndex = 0;
 
   void _selectScreen(index) {
@@ -26,7 +27,7 @@ class _TabsState extends State<Tabs> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final appColors = theme.extension<AppThemeColors>()!;
-    final productsProvider = ProductsProviderScope.watch(context);
+    final productsNotifier = ref.read(productsProvider.notifier);
 
     var activePage = 'RanOut';
     Widget activeScreen = const RanOutScreen();
@@ -44,14 +45,14 @@ class _TabsState extends State<Tabs> {
     }
 
     void sync() async {
-      await productsProvider.syncProducts();
+      await productsNotifier.syncProducts();
     }
 
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: productsProvider.isSyncing ? null : sync,
+            onPressed: productsNotifier.isSyncing ? null : sync,
             icon: Icon(Icons.sync),
           ),
         ],

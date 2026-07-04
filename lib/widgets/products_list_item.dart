@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/providers/products_provider.dart';
@@ -6,7 +7,7 @@ import 'package:never_out/screens/new_product.dart';
 import 'package:never_out/theme/app_colors.dart';
 import 'package:never_out/theme/app_constants.dart';
 
-class ProductsListItem extends StatelessWidget {
+class ProductsListItem extends ConsumerWidget {
   const ProductsListItem({
     super.key,
     required this.product,
@@ -56,7 +57,7 @@ class ProductsListItem extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final appColors = theme.extension<AppThemeColors>()!;
 
@@ -70,7 +71,7 @@ class ProductsListItem extends StatelessWidget {
           onTap: () async {
             final navigator = Navigator.of(context);
             final messenger = ScaffoldMessenger.of(context);
-            final productsProvider = ProductsProviderScope.read(context);
+            final productsNotifier = ref.read(productsProvider.notifier);
 
             final editedProduct = await navigator.push<ProductModel>(
               MaterialPageRoute(
@@ -82,7 +83,7 @@ class ProductsListItem extends StatelessWidget {
 
             if (editedProduct != null) {
               try {
-                await productsProvider.updateProduct(editedProduct);
+                await productsNotifier.updateProduct(editedProduct);
               } catch (e) {
                 messenger.showSnackBar(
                   SnackBar(
@@ -95,9 +96,9 @@ class ProductsListItem extends StatelessWidget {
           child: Dismissible(
             onDismissed: (direction) async {
               final messenger = ScaffoldMessenger.of(context);
-              final productsProvider = ProductsProviderScope.read(context);
+              final productsNotifier = ref.read(productsProvider.notifier);
               try {
-                await productsProvider.setDeleted(product);
+                await productsNotifier.setDeleted(product);
               } catch (e) {
                 messenger.showSnackBar(
                   SnackBar(

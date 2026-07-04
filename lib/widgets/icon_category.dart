@@ -28,7 +28,7 @@ class _IconCategoryState extends State<IconCategory> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.category.name),
+          Text(widget.category.name, style: Theme.of(context).textTheme.titleSmall,),
           SizedBox(
             height: 6,
           ),

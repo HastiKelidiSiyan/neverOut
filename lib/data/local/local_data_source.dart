@@ -10,7 +10,13 @@ class LocalDataSource {
   final db.AppDatabase _database;
 
   Future<List<ProductModel>> getProducts() async {
-    final products = await _database.select(_database.products).get();
+    final List<db.Product> products;
+
+    try {
+      products = await _database.select(_database.products).get();
+    } catch (error) {
+      throw Exception('Error fetching products from local database');
+    }
     return products.map(_toProductModel).toList();
   }
 
@@ -18,11 +24,12 @@ class LocalDataSource {
     return getProducts();
   }
 
-  Future<void> addProduct(ProductModel product) async {
+  Future<bool> addProduct(ProductModel product) async {
     try {
       await _database
           .into(_database.products)
           .insert(_toInsertCompanion(product));
+      return true;
     } catch (error) {
       if (_isUniqueNameConstraint(error)) {
         throw Exception('A Product with such name already exists');
@@ -33,58 +40,80 @@ class LocalDataSource {
   }
 
   Future<List<ProductModel>> getPendingProducts() async {
-    final query = _database.select(_database.products)
-      ..where(
-        (product) => product.syncStatus
-            .equals(SyncStatus.synced.name)
-            .not(),
-      );
-
-    final products = await query.get();
-    return products.map(_toProductModel).toList();
+    try {
+      final List<db.Product> products = await _database
+          .select(_database.products)
+          .get();
+      return products
+          .where((product) => product.syncStatus != SyncStatus.synced.name)
+          .map(_toProductModel)
+          .toList();
+    } catch (error) {
+      throw Exception('Error fetching pending products from local database');
+    }
   }
 
-  Future<void> updateProductSyncStatus(
+  Future<bool> updateProductSyncStatus(
     ProductModel product,
     SyncStatus syncStatus,
   ) async {
     final databaseId = _requireDatabaseId(product);
 
-    await (_database.update(_database.products)
-          ..where((row) => row.databaseId.equals(databaseId)))
-        .write(
-          db.ProductsCompanion(
-            syncStatus: Value(syncStatus.name),
-          ),
-        );
+    try {
+      await (_database.update(
+        _database.products,
+      )..where((row) => row.databaseId.equals(databaseId))).write(
+        db.ProductsCompanion(
+          syncStatus: Value(syncStatus.name),
+        ),
+      );
+      return true;
+    } catch (error) {
+      throw Exception('Error updating product sync status');
+    }
   }
 
-  Future<void> updateProductServerId(ProductModel product) async {
+  Future<bool> updateProductServerId(ProductModel product) async {
     final databaseId = _requireDatabaseId(product);
 
-    await (_database.update(_database.products)
-          ..where((row) => row.databaseId.equals(databaseId)))
-        .write(
-          db.ProductsCompanion(
-            serverId: Value(product.serverId),
-          ),
-        );
+    try {
+      await (_database.update(
+        _database.products,
+      )..where((row) => row.databaseId.equals(databaseId))).write(
+        db.ProductsCompanion(
+          serverId: Value(product.serverId),
+        ),
+      );
+      return true;
+    } catch (error) {
+      throw Exception('Error updating product server id');
+    }
   }
 
-  Future<void> updateProduct(ProductModel product) async {
+  Future<bool> updateProduct(ProductModel product) async {
     final databaseId = _requireDatabaseId(product);
 
-    await (_database.update(_database.products)
-          ..where((row) => row.databaseId.equals(databaseId)))
-        .write(_toUpdateCompanion(product));
+    try {
+      await (_database.update(_database.products)
+            ..where((row) => row.databaseId.equals(databaseId)))
+          .write(_toUpdateCompanion(product));
+      return true;
+    } catch (error) {
+      throw Exception('Error updating product');
+    }
   }
 
-  Future<void> deleteProduct(ProductModel product) async {
+  Future<bool> deleteProduct(ProductModel product) async {
     final databaseId = _requireDatabaseId(product);
 
-    await (_database.delete(_database.products)
-          ..where((row) => row.databaseId.equals(databaseId)))
-        .go();
+    try {
+      await (_database.delete(
+        _database.products,
+      )..where((row) => row.databaseId.equals(databaseId))).go();
+      return true;
+    } catch (error) {
+      throw Exception('Error deleting product');
+    }
   }
 
   ProductModel _toProductModel(db.Product product) {
@@ -119,7 +148,7 @@ class LocalDataSource {
       quantity: product.quantity,
       unitType: product.unitType.name,
       syncStatus: product.syncStatus.name,
-      iconCodePoint: product.iconData.codePoint
+      iconCodePoint: product.iconData.codePoint,
     );
   }
 

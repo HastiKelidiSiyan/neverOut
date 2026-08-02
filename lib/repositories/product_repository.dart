@@ -36,20 +36,20 @@ class ProductRepository {
     return localDataSource.products();
   }
 
-  Future<void> addProduct(ProductModel product) async {
-      await localDataSource.addProduct(product);
+  Future<bool> addProduct(ProductModel product) async {
+      return await localDataSource.addProduct(product);
   }
 
-  Future<void> updateProduct(ProductModel product) async {
-      await localDataSource.updateProduct(product);
+  Future<bool> updateProduct(ProductModel product) async {
+      return await localDataSource.updateProduct(product);
   }
 
-  Future<void> deleteProduct(ProductModel product) async {
-      await localDataSource.deleteProduct(product);
+  Future<bool> deleteProduct(ProductModel product) async {
+      return await localDataSource.deleteProduct(product);
   }
 
-  Future<void> setDeleted(ProductModel product) async {
-      await localDataSource.updateProductSyncStatus(
+  Future<bool> setDeleted(ProductModel product) async {
+      return await localDataSource.updateProductSyncStatus(
         product,
         SyncStatus.pendingDelete,
       );

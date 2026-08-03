@@ -49,7 +49,7 @@ class BackendService {
           .from(_tableName)
           .update(product.toJson())
           .eq('server_id', serverId);
-      print('Product updated in Supabase successfully!');
+      print('Product updated in Supabase successfully');
     } catch (e) {
       print('Error updating product in Supabase: $e');
       rethrow;

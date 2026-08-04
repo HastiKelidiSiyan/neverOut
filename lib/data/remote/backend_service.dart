@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/rendering.dart';
+import 'package:never_out/models/app_failure.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:never_out/models/product_model.dart';
 
@@ -11,8 +13,14 @@ class BackendService {
   Future<void> addProduct(ProductModel product) async {
     try {
       await _supabaseClient.from(_tableName).insert(product.toJson());
-    } catch (e) {
-      throw Exception('Error adding product to Supabase: $e');
+    } on TimeoutException {
+      throw const TimeoutFailure();
+    } on SocketException {
+      throw const NetworkFailure();
+    } catch (e, stackTrace) {
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
+      throw const UnknownFailure();
     }
   }
 
@@ -29,11 +37,13 @@ class BackendService {
           .toList();
       return products;
     } on TimeoutException {
-      throw Exception('Request timed out, high network latency');
+      throw const TimeoutFailure();
     } on SocketException {
-      throw Exception('Network issue, Check internet connection or host');
-    } catch (e) {
-      throw Exception('Error: $e');
+      throw const NetworkFailure();
+    } catch (e, stackTrace) {
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
+      throw const UnknownFailure();
     }
   }
 
@@ -49,8 +59,14 @@ class BackendService {
           .from(_tableName)
           .update(product.toJson())
           .eq('server_id', serverId);
-    } catch (e) {
-      rethrow;
+    } on TimeoutException {
+      throw const TimeoutFailure();
+    } on SocketException {
+      throw const NetworkFailure();
+    } catch (e, stackTrace) {
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
+      throw const UnknownFailure();
     }
   }
 
@@ -63,8 +79,14 @@ class BackendService {
       }
 
       await _supabaseClient.from(_tableName).delete().eq('server_id', serverId);
-    } catch (e) {
-      rethrow;
+    } on TimeoutException {
+      throw const TimeoutFailure();
+    } on SocketException {
+      throw const NetworkFailure();
+    } catch (e, stackTrace) {
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
+      throw const UnknownFailure();
     }
   }
 
@@ -77,8 +99,14 @@ class BackendService {
           .single();
 
       return ProductModel.fromJson(data);
-    } catch (e) {
-      rethrow;
+    } on TimeoutException {
+      throw const TimeoutFailure();
+    } on SocketException {
+      throw const NetworkFailure();
+    } catch (e, stackTrace) {
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
+      throw const UnknownFailure();
     }
   }
 
@@ -95,8 +123,14 @@ class BackendService {
       }
 
       return ProductModel.fromJson(data.first);
-    } catch (e) {
-      rethrow;
+    } on TimeoutException {
+      throw const TimeoutFailure();
+    } on SocketException {
+      throw const NetworkFailure();
+    } catch (e, stackTrace) {
+      debugPrint(e.toString());
+      debugPrint(stackTrace.toString());
+      throw const UnknownFailure();
     }
   }
 }

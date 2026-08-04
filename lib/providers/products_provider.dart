@@ -6,8 +6,8 @@ import 'package:never_out/repositories/product_repository.dart';
 
 final productsProvider =
     StateNotifierProvider<ProductsNotifier, List<ProductModel>>((ref) {
-  return ProductsNotifier(ProductRepository())..loadProducts();
-});
+      return ProductsNotifier(ProductRepository())..loadProducts();
+    });
 
 class ProductsNotifier extends StateNotifier<List<ProductModel>> {
   final ProductRepository productRepository;
@@ -30,27 +30,19 @@ class ProductsNotifier extends StateNotifier<List<ProductModel>> {
     _isLoading = true;
     _error = null;
 
-    try {
-      final products = await productRepository.getProducts();
+    final products = await productRepository.getProducts();
 
-      state = products
-          .where(
-            (product) => product.syncStatus != SyncStatus.pendingDelete,
-          )
-          .toList();
-    } catch (error) {
-      _error = error;
-    }
+    state = products
+        .where(
+          (product) => product.syncStatus != SyncStatus.pendingDelete,
+        )
+        .toList();
 
     _isLoading = false;
   }
 
   Future<void> addProduct(ProductModel product) async {
-    try {
-      await productRepository.addProduct(product);
-    } catch (e) {
-      throw Exception(e);
-    }
+    await productRepository.addProduct(product);
 
     await loadProducts();
     unawaited(syncProducts());
@@ -81,12 +73,8 @@ class ProductsNotifier extends StateNotifier<List<ProductModel>> {
     _isSyncing = true;
     _error = null;
 
-    try {
-      await productRepository.syncPendingProducts();
-      await loadProducts();
-    } catch (error) {
-      _error = error;
-    }
+    await productRepository.syncPendingProducts();
+    await loadProducts();
 
     _isSyncing = false;
   }

@@ -37,38 +37,22 @@ class ProductRepository {
   }
 
   Future<void> addProduct(ProductModel product) async {
-    try {
-      await localDataSource.addProduct(product);
-    } catch (e) {
-      throw Exception('Error Adding Product: $e');
-    }
+    await localDataSource.addProduct(product);
   }
 
   Future<void> updateProduct(ProductModel product) async {
-    try {
-      await localDataSource.updateProduct(product);
-    } catch (e) {
-      throw Exception('Error Updating Product: $e');
-    }
+    await localDataSource.updateProduct(product);
   }
 
   Future<void> deleteProduct(ProductModel product) async {
-    try {
-      await localDataSource.deleteProduct(product);
-    } catch (e) {
-      throw Exception('Error Deleting Product: $e');
-    }
+    await localDataSource.deleteProduct(product);
   }
 
   Future<void> setDeleted(ProductModel product) async {
-    try {
-      await localDataSource.updateProductSyncStatus(
-        product,
-        SyncStatus.pendingDelete,
-      );
-    } catch (e) {
-      throw Exception('Error Deleting Product: $e');
-    }
+    await localDataSource.updateProductSyncStatus(
+      product,
+      SyncStatus.pendingDelete,
+    );
   }
 
   Future<void> syncPendingProducts() async {

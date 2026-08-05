@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:never_out/data/local/local_data_source.dart';
 import 'package:never_out/data/remote/backend_service.dart';
 import 'package:never_out/database/database.dart';
+import 'package:never_out/models/app_failure.dart';
 import 'package:never_out/models/product_model.dart';
 
 class SyncService {
@@ -19,7 +20,7 @@ class SyncService {
   final BackendService backendService;
   final Connectivity connectivity;
 
-  Future<void> syncPendingProducts() async {
+  Future<bool> syncPendingProducts() async {
     final List<ConnectivityResult> connectivityResult = await connectivity
         .checkConnectivity();
 
@@ -28,7 +29,7 @@ class SyncService {
       final pendingProducts = await localDataSource.getPendingProducts();
 
       if (pendingProducts.isEmpty) {
-        return;
+        return true;
       }
 
       for (final product in pendingProducts) {
@@ -95,6 +96,9 @@ class SyncService {
             break;
         }
       }
+      return true;
+    } else {
+      return false;
     }
   }
 }

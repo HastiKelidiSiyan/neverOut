@@ -45,7 +45,20 @@ class _TabsState extends ConsumerState<Tabs> {
     }
 
     void sync() async {
-      await productsNotifier.syncProducts();
+      final result = await productsNotifier.syncProducts();
+      if (result) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sync completed successfully.'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sync failed. Please check your connection.'),
+          ),
+        );
+      }
     }
 
     return Scaffold(

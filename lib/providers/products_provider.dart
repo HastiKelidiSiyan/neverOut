@@ -45,37 +45,34 @@ class ProductsNotifier extends StateNotifier<List<ProductModel>> {
     await productRepository.addProduct(product);
 
     await loadProducts();
-    unawaited(syncProducts());
   }
 
   Future<void> updateProduct(ProductModel updatedProduct) async {
     await productRepository.updateProduct(updatedProduct);
 
     await loadProducts();
-    unawaited(syncProducts());
   }
 
   Future<void> deleteProduct(ProductModel product) async {
     await productRepository.deleteProduct(product);
 
     await loadProducts();
-    unawaited(syncProducts());
   }
 
   Future<void> setDeleted(ProductModel product) async {
     await productRepository.setDeleted(product);
 
     await loadProducts();
-    unawaited(syncProducts());
   }
 
-  Future<void> syncProducts() async {
+  Future<bool> syncProducts() async {
     _isSyncing = true;
     _error = null;
 
-    await productRepository.syncPendingProducts();
+    final result = await productRepository.syncPendingProducts();
     await loadProducts();
 
     _isSyncing = false;
+    return result;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:never_out/models/app_failure.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/screens/new_product.dart';
@@ -84,10 +85,24 @@ class ProductsListItem extends ConsumerWidget {
             if (editedProduct != null) {
               try {
                 await productsNotifier.updateProduct(editedProduct);
-              } catch (e) {
+              } on AppFailure catch (failure) {
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text('Error: $e'),
+                    content: Text(failureMessage(failure)),
+                  ),
+                );
+              }
+              final result = await productsNotifier.syncProducts();
+              if (result) {
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Sync completed successfully.'),
+                  ),
+                );
+              } else {
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Sync failed. Please check your connection.'),
                   ),
                 );
               }
@@ -99,10 +114,24 @@ class ProductsListItem extends ConsumerWidget {
               final productsNotifier = ref.read(productsProvider.notifier);
               try {
                 await productsNotifier.setDeleted(product);
-              } catch (e) {
+              } on AppFailure catch (failure) {
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text('Error: $e'),
+                    content: Text(failureMessage(failure)),
+                  ),
+                );
+              }
+              final result = await productsNotifier.syncProducts();
+              if (result) {
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Sync completed successfully.'),
+                  ),
+                );
+              } else {
+                messenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Sync failed. Please check your connection.'),
                   ),
                 );
               }

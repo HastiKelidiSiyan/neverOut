@@ -41,6 +41,20 @@ class ProductsScreen extends ConsumerWidget {
                 ),
               );
             }
+            final result = await productsNotifier.syncProducts();
+            if (result) {
+              messenger.showSnackBar(
+                const SnackBar(
+                  content: Text('Sync completed successfully.'),
+                ),
+              );
+            } else {
+              messenger.showSnackBar(
+                const SnackBar(
+                  content: Text('Sync failed. Please check your connection.'),
+                ),
+              );
+            }
           }
           return;
         },

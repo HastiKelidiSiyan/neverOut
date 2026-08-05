@@ -55,7 +55,7 @@ class ProductRepository {
     );
   }
 
-  Future<void> syncPendingProducts() async {
-    await syncService.syncPendingProducts();
+  Future<bool> syncPendingProducts() async {
+    return await syncService.syncPendingProducts();
   }
 }

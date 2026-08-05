@@ -14,10 +14,6 @@ class LocalDataSource {
     return products.map(_toProductModel).toList();
   }
 
-  Future<List<ProductModel>> products() {
-    return getProducts();
-  }
-
   Future<void> addProduct(ProductModel product) async {
     try {
       await _database

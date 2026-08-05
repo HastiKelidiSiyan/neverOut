@@ -33,7 +33,7 @@ class ProductRepository {
       );
 
   Future<List<ProductModel>> getProducts() async {
-    return localDataSource.products();
+    return localDataSource.getProducts();
   }
 
   Future<void> addProduct(ProductModel product) async {

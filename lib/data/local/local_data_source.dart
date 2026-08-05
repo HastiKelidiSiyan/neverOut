@@ -11,7 +11,7 @@ class LocalDataSource {
   final db.AppDatabase _database;
 
   Future<List<ProductModel>> getProducts() async {
-    final products;
+    final List<db.Product> products;
     try {
       products = await _database.select(_database.products).get();
     } on DriftWrappedException catch (error, stackTrace) {
@@ -27,7 +27,7 @@ class LocalDataSource {
       await _database
           .into(_database.products)
           .insert(_toInsertCompanion(product));
-    } on DriftWrappedException catch (error, stackTrace) {
+    } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
       if (_isUniqueNameConstraint(error)) {
@@ -38,7 +38,7 @@ class LocalDataSource {
   }
 
   Future<List<ProductModel>> getPendingProducts() async {
-    final products;
+    final List<db.Product> products;
     try {
       final query = _database.select(_database.products)
         ..where(
@@ -46,7 +46,7 @@ class LocalDataSource {
         );
 
       products = await query.get();
-    } on DriftWrappedException catch (error, stackTrace) {
+    } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
       throw const LocalDatabaseFetchFailure();
@@ -68,7 +68,7 @@ class LocalDataSource {
           syncStatus: Value(syncStatus.name),
         ),
       );
-    } on DriftWrappedException catch (error, stackTrace) {
+    } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
       throw const LocalDatabaseSaveFailure();
@@ -86,7 +86,7 @@ class LocalDataSource {
           serverId: Value(product.serverId),
         ),
       );
-    } on DriftWrappedException catch (error, stackTrace) {
+    } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
       throw const LocalDatabaseSaveFailure();
@@ -100,7 +100,7 @@ class LocalDataSource {
       await (_database.update(_database.products)
             ..where((row) => row.databaseId.equals(databaseId)))
           .write(_toUpdateCompanion(product));
-    } on DriftWrappedException catch (error, stackTrace) {
+    } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
       throw const LocalDatabaseSaveFailure();
@@ -114,7 +114,7 @@ class LocalDataSource {
       await (_database.delete(
         _database.products,
       )..where((row) => row.databaseId.equals(databaseId))).go();
-    } on DriftWrappedException catch (error, stackTrace) {
+    } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
       throw const LocalDatabaseDeleteFailure();

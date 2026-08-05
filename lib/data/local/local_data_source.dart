@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:never_out/database/database.dart' as db;
+import 'package:never_out/models/app_failure.dart';
 import 'package:never_out/models/product_model.dart';
 
 class LocalDataSource {
@@ -10,7 +11,14 @@ class LocalDataSource {
   final db.AppDatabase _database;
 
   Future<List<ProductModel>> getProducts() async {
-    final products = await _database.select(_database.products).get();
+    final products;
+    try {
+      products = await _database.select(_database.products).get();
+    } on DriftWrappedException catch (error, stackTrace) {
+      debugPrint(error.toString());
+      debugPrint(stackTrace.toString());
+      throw const LocalDatabaseFetchFailure();
+    }
     return products.map(_toProductModel).toList();
   }
 
@@ -19,24 +27,30 @@ class LocalDataSource {
       await _database
           .into(_database.products)
           .insert(_toInsertCompanion(product));
-    } catch (error) {
+    } on DriftWrappedException catch (error, stackTrace) {
+      debugPrint(error.toString());
+      debugPrint(stackTrace.toString());
       if (_isUniqueNameConstraint(error)) {
-        throw Exception('A Product with such name already exists');
+        throw const DuplicateProductFailure();
       }
-
-      rethrow;
+      throw const LocalDatabaseSaveFailure();
     }
   }
 
   Future<List<ProductModel>> getPendingProducts() async {
-    final query = _database.select(_database.products)
-      ..where(
-        (product) => product.syncStatus
-            .equals(SyncStatus.synced.name)
-            .not(),
-      );
+    final products;
+    try {
+      final query = _database.select(_database.products)
+        ..where(
+          (product) => product.syncStatus.equals(SyncStatus.synced.name).not(),
+        );
 
-    final products = await query.get();
+      products = await query.get();
+    } on DriftWrappedException catch (error, stackTrace) {
+      debugPrint(error.toString());
+      debugPrint(stackTrace.toString());
+      throw const LocalDatabaseFetchFailure();
+    }
     return products.map(_toProductModel).toList();
   }
 
@@ -46,41 +60,65 @@ class LocalDataSource {
   ) async {
     final databaseId = _requireDatabaseId(product);
 
-    await (_database.update(_database.products)
-          ..where((row) => row.databaseId.equals(databaseId)))
-        .write(
-          db.ProductsCompanion(
-            syncStatus: Value(syncStatus.name),
-          ),
-        );
+    try {
+      await (_database.update(
+        _database.products,
+      )..where((row) => row.databaseId.equals(databaseId))).write(
+        db.ProductsCompanion(
+          syncStatus: Value(syncStatus.name),
+        ),
+      );
+    } on DriftWrappedException catch (error, stackTrace) {
+      debugPrint(error.toString());
+      debugPrint(stackTrace.toString());
+      throw const LocalDatabaseSaveFailure();
+    }
   }
 
   Future<void> updateProductServerId(ProductModel product) async {
     final databaseId = _requireDatabaseId(product);
 
-    await (_database.update(_database.products)
-          ..where((row) => row.databaseId.equals(databaseId)))
-        .write(
-          db.ProductsCompanion(
-            serverId: Value(product.serverId),
-          ),
-        );
+    try {
+      await (_database.update(
+        _database.products,
+      )..where((row) => row.databaseId.equals(databaseId))).write(
+        db.ProductsCompanion(
+          serverId: Value(product.serverId),
+        ),
+      );
+    } on DriftWrappedException catch (error, stackTrace) {
+      debugPrint(error.toString());
+      debugPrint(stackTrace.toString());
+      throw const LocalDatabaseSaveFailure();
+    }
   }
 
   Future<void> updateProduct(ProductModel product) async {
     final databaseId = _requireDatabaseId(product);
 
-    await (_database.update(_database.products)
-          ..where((row) => row.databaseId.equals(databaseId)))
-        .write(_toUpdateCompanion(product));
+    try {
+      await (_database.update(_database.products)
+            ..where((row) => row.databaseId.equals(databaseId)))
+          .write(_toUpdateCompanion(product));
+    } on DriftWrappedException catch (error, stackTrace) {
+      debugPrint(error.toString());
+      debugPrint(stackTrace.toString());
+      throw const LocalDatabaseSaveFailure();
+    }
   }
 
   Future<void> deleteProduct(ProductModel product) async {
     final databaseId = _requireDatabaseId(product);
 
-    await (_database.delete(_database.products)
-          ..where((row) => row.databaseId.equals(databaseId)))
-        .go();
+    try {
+      await (_database.delete(
+        _database.products,
+      )..where((row) => row.databaseId.equals(databaseId))).go();
+    } on DriftWrappedException catch (error, stackTrace) {
+      debugPrint(error.toString());
+      debugPrint(stackTrace.toString());
+      throw const LocalDatabaseDeleteFailure();
+    }
   }
 
   ProductModel _toProductModel(db.Product product) {
@@ -115,7 +153,7 @@ class LocalDataSource {
       quantity: product.quantity,
       unitType: product.unitType.name,
       syncStatus: product.syncStatus.name,
-      iconCodePoint: product.iconData.codePoint
+      iconCodePoint: product.iconData.codePoint,
     );
   }
 
@@ -137,7 +175,7 @@ class LocalDataSource {
     final databaseId = product.databaseId;
 
     if (databaseId == null) {
-      throw StateError('A local product database id is required');
+      throw Exception('A local product database id is required');
     }
 
     return databaseId;

@@ -14,8 +14,15 @@ class DuplicateProductFailure extends AppFailure {
   const DuplicateProductFailure();
 }
 
-class LocalDatabaseFailure extends AppFailure {
-  const LocalDatabaseFailure();
+class LocalDatabaseSaveFailure extends AppFailure {
+  const LocalDatabaseSaveFailure();
+}
+
+class LocalDatabaseFetchFailure extends AppFailure {
+  const LocalDatabaseFetchFailure();
+}
+class LocalDatabaseDeleteFailure extends AppFailure {
+  const LocalDatabaseDeleteFailure();
 }
 
 class UnknownFailure extends AppFailure {
@@ -30,8 +37,12 @@ String failureMessage(AppFailure failure) {
       'The server took too long to respond. Please try again.',
     DuplicateProductFailure() =>
       'A product with this name already exists.',
-    LocalDatabaseFailure() =>
+    LocalDatabaseSaveFailure() =>
       'We couldn’t save your change on this device. Please try again.',
+    LocalDatabaseFetchFailure() =>
+      'We couldn’t fetch your data from this device. Please try again.',
+    LocalDatabaseDeleteFailure() =>
+      'We couldn’t delete your data from this device. Please try again.',
     UnknownFailure() =>
       'Something went wrong. Please try again.',
   };

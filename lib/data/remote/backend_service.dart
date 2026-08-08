@@ -24,29 +24,6 @@ class BackendService {
     }
   }
 
-  Future<List<ProductModel>> fetchProducts() async {
-    try {
-      final response = await _supabaseClient
-          .from(_tableName)
-          .select('*')
-          .timeout(
-            Duration(seconds: 30),
-          );
-      final List<ProductModel> products = (response as List<dynamic>)
-          .map((json) => ProductModel.fromJson(json))
-          .toList();
-      return products;
-    } on TimeoutException {
-      throw const TimeoutFailure();
-    } on SocketException {
-      throw const NetworkFailure();
-    } catch (e, stackTrace) {
-      debugPrint(e.toString());
-      debugPrint(stackTrace.toString());
-      throw const UnknownFailure();
-    }
-  }
-
   Future<void> updateProduct(ProductModel product) async {
     try {
       final serverId = product.serverId;

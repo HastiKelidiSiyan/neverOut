@@ -4,6 +4,7 @@ import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/screens/products.dart';
 import 'package:never_out/screens/ran_out.dart';
 import 'package:never_out/theme/app_colors.dart';
+import 'package:never_out/ui/app_feedback.dart';
 
 class Tabs extends ConsumerStatefulWidget {
   const Tabs({
@@ -47,17 +48,9 @@ class _TabsState extends ConsumerState<Tabs> {
     void sync() async {
       final result = await productsNotifier.syncProducts();
       if (result) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sync completed successfully.'),
-          ),
-        );
+        AppFeedback.showSyncResult(context, result);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sync failed. Please check your connection.'),
-          ),
-        );
+        AppFeedback.showSyncResult(context, result);
       }
     }
 

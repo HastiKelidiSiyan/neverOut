@@ -3,6 +3,7 @@ import 'package:never_out/models/app_failure.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/screens/new_product.dart';
 import 'package:never_out/theme/app_constants.dart';
+import 'package:never_out/ui/app_feedback.dart';
 import 'package:never_out/widgets/products_list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:never_out/providers/products_provider.dart';
@@ -23,8 +24,6 @@ class ProductsScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final navigator = Navigator.of(context);
-          final messenger = ScaffoldMessenger.of(context);
-
           final newProduct = await navigator.push<ProductModel>(
             MaterialPageRoute(
               builder: (context) => const NewProductScreen(),
@@ -35,25 +34,13 @@ class ProductsScreen extends ConsumerWidget {
             try {
               await productsNotifier.addProduct(newProduct);
             } on AppFailure catch (failure) {
-              messenger.showSnackBar(
-                SnackBar(
-                  content: Text(failureMessage(failure)),
-                ),
-              );
+              AppFeedback.showFailure(context, failure);
             }
             final result = await productsNotifier.syncProducts();
             if (result) {
-              messenger.showSnackBar(
-                const SnackBar(
-                  content: Text('Sync completed successfully.'),
-                ),
-              );
+              AppFeedback.showSyncResult(context, result);
             } else {
-              messenger.showSnackBar(
-                const SnackBar(
-                  content: Text('Sync failed. Please check your connection.'),
-                ),
-              );
+              AppFeedback.showSyncResult(context, result);
             }
           }
           return;

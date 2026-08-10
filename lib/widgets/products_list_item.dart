@@ -7,6 +7,7 @@ import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/screens/new_product.dart';
 import 'package:never_out/theme/app_colors.dart';
 import 'package:never_out/theme/app_constants.dart';
+import 'package:never_out/ui/app_feedback.dart';
 
 class ProductsListItem extends ConsumerWidget {
   const ProductsListItem({
@@ -71,7 +72,6 @@ class ProductsListItem extends ConsumerWidget {
           borderRadius: BorderRadius.circular(AppRadius.medium),
           onTap: () async {
             final navigator = Navigator.of(context);
-            final messenger = ScaffoldMessenger.of(context);
             final productsNotifier = ref.read(productsProvider.notifier);
 
             final editedProduct = await navigator.push<ProductModel>(
@@ -86,54 +86,29 @@ class ProductsListItem extends ConsumerWidget {
               try {
                 await productsNotifier.updateProduct(editedProduct);
               } on AppFailure catch (failure) {
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text(failureMessage(failure)),
-                  ),
-                );
+                AppFeedback.showFailure(context, failure);
               }
               final result = await productsNotifier.syncProducts();
               if (result) {
-                messenger.showSnackBar(
-                  const SnackBar(
-                    content: Text('Sync completed successfully.'),
-                  ),
-                );
+                AppFeedback.showSyncResult(context, result);
               } else {
-                messenger.showSnackBar(
-                  const SnackBar(
-                    content: Text('Sync failed. Please check your connection.'),
-                  ),
-                );
+                AppFeedback.showSyncResult(context, result);
               }
             }
           },
           child: Dismissible(
             onDismissed: (direction) async {
-              final messenger = ScaffoldMessenger.of(context);
               final productsNotifier = ref.read(productsProvider.notifier);
               try {
                 await productsNotifier.setDeleted(product);
               } on AppFailure catch (failure) {
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text(failureMessage(failure)),
-                  ),
-                );
+                AppFeedback.showFailure(context, failure);
               }
               final result = await productsNotifier.syncProducts();
               if (result) {
-                messenger.showSnackBar(
-                  const SnackBar(
-                    content: Text('Sync completed successfully.'),
-                  ),
-                );
+                AppFeedback.showSyncResult(context, result);
               } else {
-                messenger.showSnackBar(
-                  const SnackBar(
-                    content: Text('Sync failed. Please check your connection.'),
-                  ),
-                );
+                AppFeedback.showSyncResult(context, result);
               }
             },
             key: ValueKey(product.databaseId),

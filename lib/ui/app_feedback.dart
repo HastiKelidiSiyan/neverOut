@@ -7,7 +7,10 @@ class AppFeedback {
 
     messenger.showSnackBar(
       SnackBar(
-        content: Text(failureMessage(failure)),
+        backgroundColor: const Color.fromARGB(255, 124, 39, 39),
+        content: Text(
+          style: TextStyle(color: Colors.red),
+          failureMessage(failure)),
       ),
     );
   }
@@ -17,7 +20,9 @@ class AppFeedback {
 
     messenger.showSnackBar(
       SnackBar(
+        backgroundColor: result ? const Color.fromARGB(255, 46, 105, 48) : const Color.fromARGB(255, 124, 39, 39),
         content: Text(
+          style: TextStyle(color: result ? Colors.green : Colors.red),
           result
               ? 'Sync completed successfully.'
               : 'Sync failed. Please check your connection.',

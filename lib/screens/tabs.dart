@@ -55,6 +55,7 @@ class _TabsState extends ConsumerState<Tabs> {
     }
 
     return Scaffold(
+      drawer: MainDrawer(),
       appBar: AppBar(
         actions: [
           IconButton(

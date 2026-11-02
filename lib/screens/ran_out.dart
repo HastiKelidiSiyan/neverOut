@@ -4,6 +4,7 @@ import 'package:never_out/models/product_model.dart';
 import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/theme/app_colors.dart';
 import 'package:never_out/theme/app_constants.dart';
+import 'package:never_out/ui/app_feedback.dart';
 import 'package:never_out/widgets/products_list.dart';
 
 class RanOutScreen extends ConsumerWidget {
@@ -38,13 +39,7 @@ class RanOutScreen extends ConsumerWidget {
     }
 
     if (productsNotifier.error != null && products.isEmpty) {
-      return Center(
-        child: Text(
-          productsNotifier.error.toString(),
-          style: textTheme.bodyLarge!.copyWith(fontSize: 18),
-          textAlign: TextAlign.center,
-        ),
-      );
+      AppFeedback.showFailure(context, productsNotifier.error!);
     }
 
     if (products.isEmpty) {

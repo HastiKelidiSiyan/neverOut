@@ -83,33 +83,34 @@ class ProductsListItem extends ConsumerWidget {
             );
 
             if (editedProduct != null) {
-              try {
-                await productsNotifier.updateProduct(editedProduct);
-              } on AppFailure catch (failure) {
-                AppFeedback.showFailure(context, failure);
+              await productsNotifier.updateProduct(editedProduct);
+              if (productsNotifier.error != null) {
+                AppFeedback.showFailure(context, productsNotifier.error!);
               }
+
               final result = await productsNotifier.syncProducts();
-              if (result) {
-                AppFeedback.showSyncResult(context, result);
-              } else {
-                AppFeedback.showSyncResult(context, result);
-              }
+              AppFeedback.showSyncResult(
+                context,
+                result,
+                productsNotifier.error,
+              );
             }
           },
           child: Dismissible(
             onDismissed: (direction) async {
               final productsNotifier = ref.read(productsProvider.notifier);
-              try {
-                await productsNotifier.setDeleted(product);
-              } on AppFailure catch (failure) {
-                AppFeedback.showFailure(context, failure);
+              await productsNotifier.deleteProduct(product);
+
+              if (productsNotifier.error != null) {
+                AppFeedback.showFailure(context, productsNotifier.error!);
               }
+
               final result = await productsNotifier.syncProducts();
-              if (result) {
-                AppFeedback.showSyncResult(context, result);
-              } else {
-                AppFeedback.showSyncResult(context, result);
-              }
+              AppFeedback.showSyncResult(
+                context,
+                result,
+                productsNotifier.error,
+              );
             },
             key: ValueKey(product.databaseId),
             child: Card(

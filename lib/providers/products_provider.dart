@@ -1,26 +1,29 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:never_out/models/app_failure.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/repositories/product_repository.dart';
 
 final productsProvider =
     StateNotifierProvider<ProductsNotifier, List<ProductModel>>((ref) {
-      return ProductsNotifier(ProductRepository())..loadProducts();
+      return ProductsNotifier()..loadProducts();
     });
 
 class ProductsNotifier extends StateNotifier<List<ProductModel>> {
-  final ProductRepository productRepository;
+  ProductsNotifier({ProductRepository? productRepository})
+    : productRepository = productRepository ?? ProductRepository(),
+      super(const []);
 
-  ProductsNotifier(this.productRepository) : super(const []);
+  final ProductRepository productRepository;
 
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
 
-  Object? _error;
+  AppFailure? _error;
 
-  Object? get error => _error;
+  AppFailure? get error => _error;
 
   bool _isSyncing = false;
 
@@ -30,49 +33,61 @@ class ProductsNotifier extends StateNotifier<List<ProductModel>> {
     _isLoading = true;
     _error = null;
 
-    final products = await productRepository.getProducts();
+    try {
+      final products = await productRepository.getProducts();
 
-    state = products
-        .where(
-          (product) => product.syncStatus != SyncStatus.pendingDelete,
-        )
-        .toList();
-
-    _isLoading = false;
+      state = products
+          .where(
+            (product) => product.syncStatus != SyncStatus.pendingDelete,
+          )
+          .toList();
+    } catch (e) {
+      _error = e as AppFailure?;
+    } finally {
+      _isLoading = false;
+    }
   }
 
   Future<void> addProduct(ProductModel product) async {
-    await productRepository.addProduct(product);
-
+    try {
+      await productRepository.addProduct(product);
+    } catch (e) {
+      _error = e as AppFailure?;
+    }
     await loadProducts();
   }
 
   Future<void> updateProduct(ProductModel updatedProduct) async {
-    await productRepository.updateProduct(updatedProduct);
-
+    try {
+      await productRepository.updateProduct(updatedProduct);
+    } catch (e) {
+      _error = e as AppFailure?;
+    }
     await loadProducts();
   }
 
   Future<void> deleteProduct(ProductModel product) async {
-    await productRepository.deleteProduct(product);
-
-    await loadProducts();
-  }
-
-  Future<void> setDeleted(ProductModel product) async {
-    await productRepository.setDeleted(product);
-
+    try {
+      await productRepository.setDeleted(product);
+    } catch (e) {
+      _error = e as AppFailure?;
+    }
     await loadProducts();
   }
 
   Future<bool> syncProducts() async {
     _isSyncing = true;
     _error = null;
+    var result = false;
 
-    final result = await productRepository.syncPendingProducts();
+    try {
+      result = await productRepository.syncPendingProducts();
+    } catch (e) {
+      _error = e as AppFailure?;
+    } finally {
+      _isSyncing = false;
+    }
     await loadProducts();
-
-    _isSyncing = false;
     return result;
   }
 }

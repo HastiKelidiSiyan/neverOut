@@ -31,17 +31,13 @@ class ProductsScreen extends ConsumerWidget {
           );
 
           if (newProduct != null) {
-            try {
-              await productsNotifier.addProduct(newProduct);
-            } on AppFailure catch (failure) {
-              AppFeedback.showFailure(context, failure);
+            await productsNotifier.addProduct(newProduct);
+            if (productsNotifier.error != null) {
+              AppFeedback.showFailure(context, productsNotifier.error!);
             }
+            
             final result = await productsNotifier.syncProducts();
-            if (result) {
-              AppFeedback.showSyncResult(context, result);
-            } else {
-              AppFeedback.showSyncResult(context, result);
-            }
+            AppFeedback.showSyncResult(context, result, productsNotifier.error);
           }
           return;
         },
@@ -62,13 +58,7 @@ class ProductsScreen extends ConsumerWidget {
     }
 
     if (productsNotifier.error != null && products.isEmpty) {
-      return Center(
-        child: Text(
-          productsNotifier.error.toString(),
-          style: textTheme.bodyLarge!.copyWith(fontSize: 18),
-          textAlign: TextAlign.center,
-        ),
-      );
+      AppFeedback.showFailure(context, productsNotifier.error!);
     }
 
     if (products.isEmpty) {

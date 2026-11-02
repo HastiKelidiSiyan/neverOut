@@ -47,11 +47,7 @@ class _TabsState extends ConsumerState<Tabs> {
 
     void sync() async {
       final result = await productsNotifier.syncProducts();
-      if (result) {
-        AppFeedback.showSyncResult(context, result);
-      } else {
-        AppFeedback.showSyncResult(context, result);
-      }
+      AppFeedback.showSyncResult(context, result, productsNotifier.error);
     }
 
     return Scaffold(

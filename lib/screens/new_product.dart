@@ -153,9 +153,11 @@ class _NewProductScreenState extends State<NewProductScreen> {
       quantity: validatedQuantity,
       unitType: _selectedUnitType,
       updatedAt: DateTime.now(),
-      syncStatus: _isEditing
-          ? _syncStatusForEditedProduct(existingProduct!)
-          : SyncStatus.pendingCreate,
+      syncStatus: !_isEditing
+          ? SyncStatus.pendingCreate
+          : existingProduct!.syncStatus == SyncStatus.pendingCreate
+          ? SyncStatus.pendingCreate
+          : SyncStatus.pendingUpdate,
       iconData: iconData!,
     );
 
@@ -164,14 +166,6 @@ class _NewProductScreenState extends State<NewProductScreen> {
     }
 
     Navigator.pop(context, product);
-  }
-
-  SyncStatus _syncStatusForEditedProduct(ProductModel product) {
-    if (product.syncStatus == SyncStatus.pendingCreate) {
-      return SyncStatus.pendingCreate;
-    }
-
-    return SyncStatus.pendingUpdate;
   }
 
   Widget _buildTitleInput() {

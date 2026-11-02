@@ -1,25 +1,26 @@
 import 'package:drift/drift.dart';
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:never_out/database/database.dart' as db;
 import 'package:never_out/models/app_failure.dart';
 import 'package:never_out/models/product_model.dart';
+import 'package:sqlite3/sqlite3.dart' show SqlExtendedError;
 
 class LocalDataSource {
-  LocalDataSource(this._database);
-
   final db.AppDatabase _database;
 
+  LocalDataSource(this._database);
+
   Future<List<ProductModel>> getProducts() async {
-    final List<db.Product> products;
+    final List<db.Product> dbProducts;
     try {
-      products = await _database.select(_database.products).get();
-    } on DriftWrappedException catch (error, stackTrace) {
+      dbProducts = await _database.select(_database.products).get();
+    } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
       throw const LocalDatabaseFetchFailure();
     }
-    return products.map(_toProductModel).toList();
+    return dbProducts.map((p) => ProductModel.toProductModel(p)).toList();
   }
 
   Future<void> addProduct(ProductModel product) async {
@@ -42,27 +43,27 @@ class LocalDataSource {
   }
 
   Future<List<ProductModel>> getPendingProducts() async {
-    final List<db.Product> products;
+    final List<db.Product> dbProducts;
     try {
       final query = _database.select(_database.products)
         ..where(
           (product) => product.syncStatus.equals(SyncStatus.synced.name).not(),
         );
 
-      products = await query.get();
+      dbProducts = await query.get();
     } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
       throw const LocalDatabaseFetchFailure();
     }
-    return products.map(_toProductModel).toList();
+    return dbProducts.map((p) => ProductModel.toProductModel(p)).toList();
   }
 
   Future<void> updateProductSyncStatus(
     ProductModel product,
     SyncStatus syncStatus,
   ) async {
-    final databaseId = _requireDatabaseId(product);
+    final databaseId = product.databaseId!;
 
     try {
       await (_database.update(
@@ -80,7 +81,7 @@ class LocalDataSource {
   }
 
   Future<void> updateProductServerId(ProductModel product) async {
-    final databaseId = _requireDatabaseId(product);
+    final databaseId = product.databaseId!;
 
     try {
       await (_database.update(
@@ -98,7 +99,7 @@ class LocalDataSource {
   }
 
   Future<void> updateProduct(ProductModel product) async {
-    final databaseId = _requireDatabaseId(product);
+    final databaseId = product.databaseId!;
 
     try {
       await (_database.update(_database.products)
@@ -119,7 +120,7 @@ class LocalDataSource {
   }
 
   Future<void> deleteProduct(ProductModel product) async {
-    final databaseId = _requireDatabaseId(product);
+    final databaseId = product.databaseId!;
 
     try {
       await (_database.delete(
@@ -130,25 +131,6 @@ class LocalDataSource {
       debugPrint(stackTrace.toString());
       throw const LocalDatabaseDeleteFailure();
     }
-  }
-
-  ProductModel _toProductModel(db.Product product) {
-    return ProductModel(
-      databaseId: product.databaseId,
-      serverId: product.serverId,
-      name: product.name,
-      quantity: product.quantity,
-      unitType: UnitType.values.byName(product.unitType),
-      updatedAt: product.updatedAt,
-      syncStatus: SyncStatus.values.byName(product.syncStatus),
-      iconData: FaIconData(
-        IconData(
-          product.iconCodePoint,
-          fontFamily: "FontAwesomeSolid",
-          fontPackage: "font_awesome_flutter",
-        ),
-      ),
-    );
   }
 
   db.ProductsCompanion _toInsertCompanion(ProductModel product) {

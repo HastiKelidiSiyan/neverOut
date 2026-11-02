@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:never_out/database/database.dart';
 
 enum UnitType { kilogram, liter, piece, box }
 
@@ -28,29 +29,18 @@ class ProductModel {
 
   bool get isLow => quantity <= 1;
 
-  Map<String, dynamic> toMap() => {
-    'server_id': serverId,
-    'database_id': databaseId,
-    'name': name,
-    'quantity': quantity,
-    'unit_type': unitType.name,
-    'updated_at': updatedAt,
-    'sync_status': syncStatus.name,
-    'icon_code_point': iconData.codePoint,
-  };
-
-  factory ProductModel.fromMap(Map<String, dynamic> map) {
+  factory ProductModel.toProductModel(Product product) {
     return ProductModel(
-      serverId: _optionalInt(map['server_id']),
-      databaseId: _optionalInt(map['database_id']),
-      name: map['name'].toString(),
-      quantity: _requiredInt(map['quantity'], 'quantity'),
-      unitType: UnitType.values.byName(map['unit_type'].toString()),
-      updatedAt: _dateTime(map['updated_at']),
-      syncStatus: SyncStatus.values.byName(map['sync_status'].toString()),
+      databaseId: product.databaseId,
+      serverId: product.serverId,
+      name: product.name,
+      quantity: product.quantity,
+      unitType: UnitType.values.byName(product.unitType),
+      updatedAt: product.updatedAt,
+      syncStatus: SyncStatus.values.byName(product.syncStatus),
       iconData: FaIconData(
         IconData(
-          map['icon_code_point'],
+          product.iconCodePoint,
           fontFamily: "FontAwesomeSolid",
           fontPackage: "font_awesome_flutter",
         ),

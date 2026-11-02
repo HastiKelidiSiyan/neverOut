@@ -30,7 +30,11 @@ class LocalDataSource {
     } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
-      if (_isUniqueNameConstraint(error)) {
+
+      final cause = error is DriftWrappedException ? error.cause : error;
+      if (cause is SqliteException &&
+          cause.extendedResultCode ==
+              SqlExtendedError.SQLITE_CONSTRAINT_UNIQUE) {
         throw const DuplicateProductFailure();
       }
       throw const LocalDatabaseSaveFailure();
@@ -103,6 +107,13 @@ class LocalDataSource {
     } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
+      
+      final cause = error is DriftWrappedException ? error.cause : error;
+      if (cause is SqliteException &&
+          cause.extendedResultCode ==
+              SqlExtendedError.SQLITE_CONSTRAINT_UNIQUE) {
+        throw const DuplicateProductFailure();
+      }
       throw const LocalDatabaseSaveFailure();
     }
   }
@@ -169,20 +180,5 @@ class LocalDataSource {
       syncStatus: Value(product.syncStatus.name),
       iconCodePoint: Value(product.iconData.codePoint),
     );
-  }
-
-  int _requireDatabaseId(ProductModel product) {
-    final databaseId = product.databaseId;
-
-    if (databaseId == null) {
-      throw Exception('A local product database id is required');
-    }
-
-    return databaseId;
-  }
-
-  bool _isUniqueNameConstraint(Object error) {
-    final message = error.toString().toLowerCase();
-    return message.contains('unique') && message.contains('name');
   }
 }

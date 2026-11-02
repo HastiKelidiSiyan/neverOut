@@ -28,7 +28,7 @@ LazyDatabase _openConnection() {
     () async {
       final dbFolder = await getApplicationDocumentsDirectory();
       final file = File(join(dbFolder.path, 'never_out.db'));
-      return NativeDatabase(file);
+      return NativeDatabase.createInBackground(file);
     },
   );
 }

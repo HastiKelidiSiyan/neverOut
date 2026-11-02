@@ -47,6 +47,11 @@ class ProductRepository {
   }
 
   Future<void> setDeleted(ProductModel product) async {
+    if (product.syncStatus == SyncStatus.pendingCreate) {
+      deleteProduct(product);
+      return;
+    }
+    
     await localDataSource.updateProductSyncStatus(
       product,
       SyncStatus.pendingDelete,

@@ -6,7 +6,7 @@ import 'package:never_out/models/app_failure.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:never_out/models/product_model.dart';
 
-class BackendService {
+class RemoteDataSource {
   final SupabaseClient _supabaseClient = Supabase.instance.client;
   final String _tableName = 'products';
 
@@ -28,14 +28,10 @@ class BackendService {
     try {
       final serverId = product.serverId;
 
-      if (serverId == null) {
-        throw Exception('Product server id has not been synced yet');
-      }
-
       await _supabaseClient
           .from(_tableName)
           .update(product.toJson())
-          .eq('server_id', serverId);
+          .eq('server_id', serverId!);
     } on TimeoutException {
       throw const TimeoutFailure();
     } on SocketException {
@@ -51,11 +47,7 @@ class BackendService {
     try {
       final serverId = product.serverId;
 
-      if (serverId == null) {
-        throw Exception('Product server id has not been synced yet');
-      }
-
-      await _supabaseClient.from(_tableName).delete().eq('server_id', serverId);
+      await _supabaseClient.from(_tableName).delete().eq('server_id', serverId!);
     } on TimeoutException {
       throw const TimeoutFailure();
     } on SocketException {

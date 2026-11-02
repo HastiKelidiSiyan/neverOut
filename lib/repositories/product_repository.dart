@@ -1,6 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:never_out/data/local/local_data_source.dart';
-import 'package:never_out/data/remote/backend_service.dart';
+import 'package:never_out/data/remote/remote_data_source.dart';
 import 'package:never_out/database/database.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/services/sync_service.dart';
@@ -9,16 +9,16 @@ class ProductRepository {
   ProductRepository({
     LocalDataSource? localDataSource,
     Connectivity? connectivity,
-    BackendService? backendService,
+    RemoteDataSource? backendService,
     SyncService? syncService,
   }) : localDataSource = localDataSource ?? LocalDataSource(AppDatabase()),
        connectivity = connectivity ?? Connectivity(),
-       backendService = backendService ?? BackendService(),
+       backendService = backendService ?? RemoteDataSource(),
        _syncService = syncService;
 
   final LocalDataSource localDataSource;
   final Connectivity connectivity;
-  final BackendService? backendService;
+  final RemoteDataSource? backendService;
   final SyncService? _syncService;
 
 

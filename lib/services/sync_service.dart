@@ -2,21 +2,21 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:never_out/data/local/local_data_source.dart';
-import 'package:never_out/data/remote/backend_service.dart';
+import 'package:never_out/data/remote/remote_data_source.dart';
 import 'package:never_out/database/database.dart';
 import 'package:never_out/models/product_model.dart';
 
 class SyncService {
   SyncService({
     LocalDataSource? localDataSource,
-    BackendService? backendService,
+    RemoteDataSource? backendService,
     Connectivity? connectivity,
   }) : localDataSource = localDataSource ?? LocalDataSource(AppDatabase()),
-       backendService = backendService ?? BackendService(),
+       backendService = backendService ?? RemoteDataSource(),
        connectivity = connectivity ?? Connectivity();
 
   final LocalDataSource localDataSource;
-  final BackendService backendService;
+  final RemoteDataSource backendService;
   final Connectivity connectivity;
 
   Future<bool> syncPendingProducts() async {

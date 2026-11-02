@@ -72,19 +72,19 @@ class _NewProductScreenState extends State<NewProductScreen> {
   void _handleQuantityChanged() {
     final quantityText = _quantityController.text.trim();
     final parsedQuantity = int.tryParse(quantityText);
-    final nextQuantity = parsedQuantity ?? 0;
-    final nextQuantityErrorText = _quantityErrorText == null
+    final newQuantity = parsedQuantity ?? 0;
+    final newQuantityErrorText = _quantityErrorText == null
         ? null
         : _quantityErrorTextFor(quantityText, parsedQuantity);
 
-    if (nextQuantity == _quantity &&
-        nextQuantityErrorText == _quantityErrorText) {
+    if (newQuantity == _quantity &&
+        newQuantityErrorText == _quantityErrorText) {
       return;
     }
 
     setState(() {
-      _quantity = nextQuantity;
-      _quantityErrorText = nextQuantityErrorText;
+      _quantity = newQuantity;
+      _quantityErrorText = newQuantityErrorText;
     });
   }
 

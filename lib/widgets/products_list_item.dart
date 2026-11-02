@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:never_out/models/app_failure.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/providers/products_provider.dart';
 import 'package:never_out/screens/new_product.dart';

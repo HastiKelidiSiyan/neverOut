@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:never_out/models/app_failure.dart';
 import 'package:never_out/models/product_model.dart';
 import 'package:never_out/screens/new_product.dart';
 import 'package:never_out/theme/app_constants.dart';

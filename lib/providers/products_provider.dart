@@ -31,7 +31,6 @@ class ProductsNotifier extends StateNotifier<List<ProductModel>> {
 
   Future<void> loadProducts() async {
     _isLoading = true;
-    _error = null;
 
     try {
       final products = await productRepository.getProducts();
@@ -77,7 +76,6 @@ class ProductsNotifier extends StateNotifier<List<ProductModel>> {
 
   Future<bool> syncProducts() async {
     _isSyncing = true;
-    _error = null;
     var result = false;
 
     try {

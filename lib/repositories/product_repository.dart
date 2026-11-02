@@ -13,16 +13,14 @@ class ProductRepository {
     SyncService? syncService,
   }) : localDataSource = localDataSource ?? LocalDataSource(AppDatabase()),
        connectivity = connectivity ?? Connectivity(),
-       _backendService = backendService,
+       backendService = backendService ?? BackendService(),
        _syncService = syncService;
 
   final LocalDataSource localDataSource;
   final Connectivity connectivity;
-  final BackendService? _backendService;
+  final BackendService? backendService;
   final SyncService? _syncService;
 
-  late final BackendService backendService =
-      _backendService ?? BackendService();
 
   late final SyncService syncService =
       _syncService ??
@@ -32,7 +30,7 @@ class ProductRepository {
         connectivity: connectivity,
       );
 
-  Future<List<ProductModel>> getProducts() async {
+  Future<List<ProductModel>> getProducts() {
     return localDataSource.getProducts();
   }
 
@@ -55,7 +53,7 @@ class ProductRepository {
     );
   }
 
-  Future<bool> syncPendingProducts() async {
-    return await syncService.syncPendingProducts();
+  Future<bool> syncPendingProducts() {
+    return syncService.syncPendingProducts();
   }
 }

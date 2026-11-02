@@ -114,7 +114,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
     }
 
     if (quantity == null || quantity <= 0) {
-      return 'Quantity must be greater than zero.';
+      return 'Quantity must be greater than 0.';
     }
 
     return null;
@@ -298,7 +298,6 @@ class _NewProductScreenState extends State<NewProductScreen> {
   }
 
   Widget _buildPriorityIndicator() {
-    // Priority is derived from quantity so it stays consistent with the form.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

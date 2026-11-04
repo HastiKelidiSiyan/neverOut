@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:never_out/screens/settings_screen.dart';
-import 'package:never_out/ui/app_feedback.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});

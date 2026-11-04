@@ -5,6 +5,7 @@ import 'package:never_out/screens/products.dart';
 import 'package:never_out/screens/ran_out.dart';
 import 'package:never_out/theme/app_colors.dart';
 import 'package:never_out/ui/app_feedback.dart';
+import 'package:never_out/widgets/main_drawer.dart';
 
 class Tabs extends ConsumerStatefulWidget {
   const Tabs({
@@ -50,6 +51,7 @@ class _TabsState extends ConsumerState<Tabs> {
     }
 
     return Scaffold(
+      drawer: MainDrawer(),
       appBar: AppBar(
         actions: [
           IconButton(

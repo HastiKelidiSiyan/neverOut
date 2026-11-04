@@ -48,6 +48,8 @@ class ProductsNotifier extends StateNotifier<List<ProductModel>> {
   }
 
   Future<void> addProduct(ProductModel product) async {
+    _error = null;
+
     try {
       await productRepository.addProduct(product);
     } catch (e) {
@@ -57,6 +59,8 @@ class ProductsNotifier extends StateNotifier<List<ProductModel>> {
   }
 
   Future<void> updateProduct(ProductModel updatedProduct) async {
+    _error = null;
+
     try {
       await productRepository.updateProduct(updatedProduct);
     } catch (e) {
@@ -66,6 +70,8 @@ class ProductsNotifier extends StateNotifier<List<ProductModel>> {
   }
 
   Future<void> deleteProduct(ProductModel product) async {
+    _error = null;
+
     try {
       await productRepository.setDeleted(product);
     } catch (e) {
@@ -75,6 +81,7 @@ class ProductsNotifier extends StateNotifier<List<ProductModel>> {
   }
 
   Future<bool> syncProducts() async {
+    _error = null;
     _isSyncing = true;
     var result = false;
 

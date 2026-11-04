@@ -31,11 +31,15 @@ class ProductsScreen extends ConsumerWidget {
 
           if (newProduct != null) {
             await productsNotifier.addProduct(newProduct);
+            if (!context.mounted) return;
+
             if (productsNotifier.error != null) {
               AppFeedback.showFailure(context, productsNotifier.error!);
             }
-            
+
             final result = await productsNotifier.syncProducts();
+            if (!context.mounted) return;
+
             AppFeedback.showSyncResult(context, result, productsNotifier.error);
           }
           return;

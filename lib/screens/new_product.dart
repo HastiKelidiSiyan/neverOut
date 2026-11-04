@@ -170,7 +170,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
 
   Widget _buildTitleInput() {
     final theme = Theme.of(context);
-    final appColors = theme.extension<AppThemeColors>()!;
+    final isDark = theme.brightness == Brightness.dark;
     final textColor = theme.colorScheme.onSurface;
 
     return TextField(
@@ -201,7 +201,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
         label: Text(
           'Enter Product Name',
           style: theme.textTheme.bodyLarge?.copyWith(
-            color: appColors.inputLabel,
+            color: isDark ? AppColors.darkInputLabel : AppColors.lightInputLabel,
           ),
         ),
       ),
@@ -330,7 +330,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
 
   Widget _buildActionButtons() {
     final theme = Theme.of(context);
-    final appColors = theme.extension<AppThemeColors>()!;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -355,7 +355,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
         ElevatedButton(
           onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
           style: AppButtonStyles.secondaryElevatedButtonStyle(
-            appColors,
+            isDark,
             fixedSize: AppSizes.secondaryActionButton,
           ),
           child: const Text('Cancel'),

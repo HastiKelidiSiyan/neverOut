@@ -16,24 +16,32 @@ class ProductsListItem extends ConsumerWidget {
 
   final ProductModel product;
 
-  Color _borderColor(AppThemeColors colors) {
-    return product.isLow ? colors.lowProductBorder : colors.productBorder;
+  Color _borderColor(bool isDark) {
+    if (product.isLow) {
+      return isDark ? AppColors.darkRanOutBorder : AppColors.lightErrorContainer;
+    }
+    return isDark ? AppColors.darkRaisedSurface : AppColors.lightBorder;
   }
 
-  Color _quantityColor(AppThemeColors colors) {
-    return product.isLow
-        ? colors.lowQuantityBadgeBackground
-        : colors.quantityBadgeBackground;
+  Color _quantityColor(bool isDark) {
+    if (product.isLow) {
+      return isDark ? AppColors.darkRanOutBorder : AppColors.lightErrorContainer;
+    }
+    return isDark ? AppColors.darkRaisedSurface : AppColors.lightBorder;
   }
 
-  Color _quantityTextColor(AppThemeColors colors) {
-    return product.isLow ? colors.lowQuantityText : colors.quantityText;
+  Color _quantityTextColor(bool isDark) {
+    if (product.isLow) {
+      return isDark ? AppColors.darkError : AppColors.lightError;
+    }
+    return isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
   }
 
-  Color _cardColor(AppThemeColors colors) {
-    return product.isLow
-        ? colors.lowProductCardBackground
-        : colors.productCardBackground;
+  Color _cardColor(bool isDark) {
+    if (product.isLow) {
+      return isDark ? AppColors.darkRanOutSurface : AppColors.white;
+    }
+    return isDark ? AppColors.darkSurface : AppColors.white;
   }
 
   String timeAgo(DateTime createdAt) {
@@ -60,7 +68,7 @@ class ProductsListItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final appColors = theme.extension<AppThemeColors>()!;
+    final isDark = theme.brightness == Brightness.dark;
 
     return SizedBox(
       height: AppSizes.productListItemHeight,
@@ -83,11 +91,15 @@ class ProductsListItem extends ConsumerWidget {
 
             if (editedProduct != null) {
               await productsNotifier.updateProduct(editedProduct);
+              if (!context.mounted) return;
+
               if (productsNotifier.error != null) {
                 AppFeedback.showFailure(context, productsNotifier.error!);
               }
 
               final result = await productsNotifier.syncProducts();
+              if (!context.mounted) return;
+
               AppFeedback.showSyncResult(
                 context,
                 result,
@@ -99,12 +111,15 @@ class ProductsListItem extends ConsumerWidget {
             onDismissed: (direction) async {
               final productsNotifier = ref.read(productsProvider.notifier);
               await productsNotifier.deleteProduct(product);
+              if (!context.mounted) return;
 
               if (productsNotifier.error != null) {
                 AppFeedback.showFailure(context, productsNotifier.error!);
               }
 
               final result = await productsNotifier.syncProducts();
+              if (!context.mounted) return;
+
               AppFeedback.showSyncResult(
                 context,
                 result,
@@ -114,14 +129,14 @@ class ProductsListItem extends ConsumerWidget {
             key: ValueKey(product.databaseId),
             child: Card(
               elevation: 0,
-              color: _cardColor(appColors),
+              color: _cardColor(isDark),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.medium),
                 side: BorderSide(
                   width: product.isLow
                       ? AppBorderWidths.regular
                       : AppBorderWidths.thin,
-                  color: _borderColor(appColors),
+                  color: _borderColor(isDark),
                 ),
               ),
               child: Row(
@@ -130,10 +145,10 @@ class ProductsListItem extends ConsumerWidget {
                 children: [
                   const SizedBox(width: AppSpacing.large),
                   CircleAvatar(
-                    backgroundColor: _quantityColor(appColors),
+                    backgroundColor: _quantityColor(isDark),
                     child: FaIcon(
                       product.iconData,
-                      color: appColors.iconMuted,
+                      color: AppColors.grey,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.medium),
@@ -159,7 +174,7 @@ class ProductsListItem extends ConsumerWidget {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(AppRadius.small),
-                        color: _quantityColor(appColors),
+                        color: _quantityColor(isDark),
                       ),
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.medium,
@@ -168,7 +183,7 @@ class ProductsListItem extends ConsumerWidget {
                       child: Text(
                         '${product.quantity}  ${product.unitType.name[0].toUpperCase() + product.unitType.name.substring(1)}',
                         style: theme.textTheme.labelMedium?.copyWith(
-                          color: _quantityTextColor(appColors),
+                          color: _quantityTextColor(isDark),
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),

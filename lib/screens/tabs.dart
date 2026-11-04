@@ -27,7 +27,7 @@ class _TabsState extends ConsumerState<Tabs> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final appColors = theme.extension<AppThemeColors>()!;
+    final isDark = theme.brightness == Brightness.dark;
     final productsNotifier = ref.read(productsProvider.notifier);
 
     var activePage = 'RanOut';
@@ -38,15 +38,14 @@ class _TabsState extends ConsumerState<Tabs> {
       activePage = 'Products';
     }
 
-    Color appBarColor() {
-      if (activePage == 'RanOut') {
-        return appColors.ranOutAppBarBackground;
-      }
-      return appColors.appBarBackground;
-    }
+    final appBarColor = activePage == 'RanOut'
+        ? isDark ? AppColors.darkRanOutSurface : AppColors.lightRanOutAppBar
+        : isDark ? AppColors.darkSurface : AppColors.white;
 
     void sync() async {
       final result = await productsNotifier.syncProducts();
+      if (!context.mounted) return;
+
       AppFeedback.showSyncResult(context, result, productsNotifier.error);
     }
 
@@ -64,11 +63,11 @@ class _TabsState extends ConsumerState<Tabs> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: appBarColor(),
+        backgroundColor: appBarColor,
       ),
       body: activeScreen,
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: appBarColor(),
+        backgroundColor: appBarColor,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.warning), label: 'Ran Out'),
           BottomNavigationBarItem(icon: Icon(Icons.inbox), label: 'Normal'),

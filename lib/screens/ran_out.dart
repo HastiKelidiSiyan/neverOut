@@ -13,13 +13,15 @@ class RanOutScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final productsNotifier = ref.read(productsProvider.notifier);
-    final appColors = Theme.of(context).extension<AppThemeColors>()!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final products = ref.watch(productsProvider).where((product) {
       return product.isLow;
     }).toList();
 
     return Scaffold(
-      backgroundColor: appColors.ranOutBackground,
+      backgroundColor: isDark
+          ? AppColors.darkRanOutBackground
+          : AppColors.lightRanOutBackground,
       body: Padding(
         padding: const EdgeInsets.only(top: AppSpacing.xSmall),
         child: _buildBody(context, productsNotifier, products),

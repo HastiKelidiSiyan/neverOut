@@ -1,10 +1,8 @@
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:never_out/database/database.dart' as db;
 import 'package:never_out/models/app_failure.dart';
 import 'package:never_out/models/product_model.dart';
-import 'package:sqlite3/sqlite3.dart' show SqlExtendedError;
 
 class LocalDataSource {
   final db.AppDatabase _database;
@@ -32,10 +30,7 @@ class LocalDataSource {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
 
-      final cause = error is DriftWrappedException ? error.cause : error;
-      if (cause is SqliteException &&
-          cause.extendedResultCode ==
-              SqlExtendedError.SQLITE_CONSTRAINT_UNIQUE) {
+      if (error.toString().contains('UNIQUE constraint failed')) {
         throw const DuplicateProductFailure();
       }
       throw const LocalDatabaseSaveFailure();
@@ -108,11 +103,8 @@ class LocalDataSource {
     } catch (error, stackTrace) {
       debugPrint(error.toString());
       debugPrint(stackTrace.toString());
-      
-      final cause = error is DriftWrappedException ? error.cause : error;
-      if (cause is SqliteException &&
-          cause.extendedResultCode ==
-              SqlExtendedError.SQLITE_CONSTRAINT_UNIQUE) {
+
+      if (error.toString().contains('UNIQUE constraint failed')) {
         throw const DuplicateProductFailure();
       }
       throw const LocalDatabaseSaveFailure();

@@ -18,15 +18,15 @@ class IconCategoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final appColors = theme.extension<AppThemeColors>()!;
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final backgroundColor = isSelected
         ? colorScheme.primary
-        : appColors.secondaryButtonBackground;
+        : isDark ? AppColors.darkSurface : AppColors.white;
     final borderColor = isSelected
         ? colorScheme.primary
-        : appColors.secondaryButtonBorder;
-    final iconColor = isSelected ? colorScheme.onPrimary : appColors.iconMuted;
+        : isDark ? AppColors.darkRaisedSurface : AppColors.lightBorder;
+    final iconColor = isSelected ? colorScheme.onPrimary : AppColors.grey;
 
     return InkWell(
       borderRadius: BorderRadius.circular(AppRadius.small),

@@ -23,10 +23,12 @@ class AppInputStyles {
   static OutlineInputBorder outlineInputBorder(Color color) {
     return OutlineInputBorder(
       borderSide: BorderSide(
+        style: BorderStyle.solid,
         width: AppBorderWidths.regular,
         color: color,
       ),
-      borderRadius: BorderRadius.circular(AppRadius.medium),
+      borderRadius: BorderRadius.all(Radius.circular(AppRadius.medium)),
+
     );
   }
 }
@@ -58,16 +60,24 @@ class AppButtonStyles {
   }
 
   static ButtonStyle secondaryElevatedButtonStyle(
-    AppThemeColors colors, {
+    bool isDark, {
     Size? fixedSize,
   }) {
     return ElevatedButton.styleFrom(
       fixedSize: fixedSize,
-      backgroundColor: colors.secondaryButtonBackground,
-      foregroundColor: colors.secondaryButtonForeground,
+      backgroundColor: isDark
+          ? AppColors.darkSurface
+          : AppColors.white,
+      foregroundColor: isDark
+          ? AppColors.darkSecondaryButtonText
+          : AppColors.lightSecondaryText,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.medium),
-        side: BorderSide(color: colors.secondaryButtonBorder),
+        side: BorderSide(
+          color: isDark
+              ? AppColors.darkRaisedSurface
+              : AppColors.lightBorder,
+        ),
       ),
     );
   }

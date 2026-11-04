@@ -8,6 +8,7 @@ ThemeData buildDarkTheme() {
 
   return baseTheme.copyWith(
     brightness: Brightness.dark,
+    scaffoldBackgroundColor: AppColors.darkScaffold,
     colorScheme: baseTheme.colorScheme.copyWith(
       brightness: Brightness.dark,
       primary: AppColors.white,
@@ -16,8 +17,7 @@ ThemeData buildDarkTheme() {
       onSurface: AppColors.white,
       error: AppColors.darkError,
     ),
-    scaffoldBackgroundColor: AppColors.darkScaffold,
-    appBarTheme: baseTheme.appBarTheme.copyWith(
+    appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.darkSurface,
       foregroundColor: AppColors.white,
     ),
@@ -61,8 +61,5 @@ ThemeData buildDarkTheme() {
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: AppColors.white,
     ),
-    extensions: const <ThemeExtension<dynamic>>[
-      AppThemeColors.dark,
-    ],
   );
 }

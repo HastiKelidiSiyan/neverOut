@@ -8,6 +8,7 @@ ThemeData buildLightTheme() {
 
   return baseTheme.copyWith(
     brightness: Brightness.light,
+    scaffoldBackgroundColor: AppColors.lightScaffold,
     colorScheme: baseTheme.colorScheme.copyWith(
       brightness: Brightness.light,
       primary: AppColors.black,
@@ -16,8 +17,7 @@ ThemeData buildLightTheme() {
       onSurface: AppColors.black,
       error: AppColors.lightError,
     ),
-    scaffoldBackgroundColor: AppColors.lightScaffold,
-    appBarTheme: baseTheme.appBarTheme.copyWith(
+    appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.white,
       foregroundColor: AppColors.black,
     ),
@@ -61,8 +61,5 @@ ThemeData buildLightTheme() {
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: AppColors.black,
     ),
-    extensions: const <ThemeExtension<dynamic>>[
-      AppThemeColors.light,
-    ],
   );
 }
